@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import Stars from "@/components/Stars";
@@ -143,7 +142,7 @@ const Index = () => {
         } else {
             meaning = `Current situation: ${interpretation.current}, Future guidance: ${interpretation.future}, Divine message: ${interpretation.divine}`;
         }
-        return `${index + 1}. ${position}: ${card.name} ${card.reversed ? '(Reversed)' : ''}. Traditional meaning: ${meaning}`;
+        return `${index + 1}. ${position}: ${card.name} ${card.reversed ? '(Reversed)' : ''}. Traditional meaning: ${meaning}. Context: ${card.desc}`;
     }).join('\n');
 
     const prompt = `You are a wise, eloquent, and compassionate tarot reader named Mystica.
@@ -357,6 +356,9 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
                            <p><strong>Divine:</strong> {interpretation.divine}</p>
                          </div>
                        )}
+                       <p className="font-lato text-xs text-foreground/70 mt-3 pt-3 border-t border-primary/20 italic">
+                         {card.desc}
+                       </p>
                      </motion.div>
                   )}
                   </AnimatePresence>
