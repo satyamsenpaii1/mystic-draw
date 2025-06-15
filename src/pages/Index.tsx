@@ -132,7 +132,7 @@ const Index = () => {
   };
 
   const generateAIReading = useCallback(async () => {
-    if (!generator || !category || isGenerating || aiReading || aiSummary) return;
+    if (!generator || !category || isGenerating || (aiReading && aiSummary)) return;
     setIsGenerating(true);
 
     const cardDetails = selectedCards.map((card, index) => {
@@ -147,22 +147,15 @@ const Index = () => {
         return `${index + 1}. ${position}: ${card.name} ${card.reversed ? '(Reversed)' : ''}. Traditional meaning: ${meaning}. Context: ${card.desc}`;
     }).join('\n');
 
-    const prompt = `You are a wise, eloquent, and compassionate tarot reader named Mystica.
-A querent has come to you seeking guidance about their ${category}.
-You have drawn the following cards for them:
+    const prompt = `You are a wise, compassionate tarot reader.
+A querent is asking for guidance on "${category}".
+Here are their cards:
 ${cardDetails}
 
-First, provide a very concise, 2-3 sentence summary of the entire reading. This summary should capture the core message and most important advice. Start this section with "SUMMARY:".
-
-After the summary, provide a more detailed, insightful, and flowing narrative for their tarot reading. Weave the meanings of the cards and their positions together into a cohesive story. Address the querent directly. Structure your response into three distinct paragraphs:
-
-1.  **Your Present Path:** Begin by analyzing their current situation, the energies surrounding them, and the immediate challenges or opportunities as revealed by the cards.
-
-2.  **The Unfolding Future:** Look ahead to what is developing. Discuss the path forward, potential outcomes, and offer gentle, actionable advice based on the guidance from the cards.
-
-3.  **Wisdom of the Cosmos:** Conclude with a profound, uplifting spiritual message. Synthesize the core lesson of the reading and offer a divine perspective to empower them on their journey.
-
-Write in a mystical, yet clear and encouraging tone. Do not simply list the card meanings.`;
+Please provide a reading in two parts.
+First, write a concise 2-3 sentence summary of the core message.
+Then, on a new line, write "---" as a separator.
+Finally, write a detailed, flowing narrative in three paragraphs that weaves the cards together into a cohesive story.`;
 
     try {
         const result = await generator(prompt, {
@@ -170,32 +163,41 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
             temperature: 0.75,
             top_k: 50,
             do_sample: true,
-            repetition_penalty: 1.1,
         });
         const fullText = result[0].generated_text;
         
-        const summaryMarker = "SUMMARY:";
-        const detailedReadingMarker = "Your Present Path:";
+        // The model output often includes the prompt, so we slice it off if present.
+        const generatedTextOnly = fullText.startsWith(prompt) ? fullText.slice(prompt.length) : fullText;
+        const cleanText = generatedTextOnly.trim();
         
-        // Find the last occurence in case the marker is in the prompt
-        const summaryStartIndex = fullText.lastIndexOf(summaryMarker);
-        const detailedReadingStartIndex = fullText.lastIndexOf(detailedReadingMarker);
+        const parts = cleanText.split('---');
 
-        if (summaryStartIndex !== -1 && detailedReadingStartIndex !== -1 && summaryStartIndex < detailedReadingStartIndex) {
-            const summary = fullText.substring(summaryStartIndex + summaryMarker.length, detailedReadingStartIndex).trim();
-            const detailed = fullText.substring(detailedReadingStartIndex).trim();
-            setAiSummary(summary);
-            setAiReading(detailed);
+        if (parts.length >= 2) {
+            setAiSummary(parts[0].trim());
+            setAiReading(parts.slice(1).join('---').trim());
         } else {
-            const readingTextStartIndex = fullText.lastIndexOf("Your Present Path:");
-            const readingText = readingTextStartIndex > -1 ? fullText.substring(readingTextStartIndex) : "Could not parse the reading. The spirits are mysterious today.";
-            setAiReading(readingText.trim());
-            setAiSummary('');
+            // Fallback if the "---" separator is not found
+            setAiReading(cleanText);
+            setAiSummary("Here is the essence of your reading.");
         }
     } catch (error) {
         console.error("Failed to generate AI reading:", error);
-        setAiReading("Apologies, the connection to the spirit world is unclear at this moment. The cosmos asks for a moment of peace. Please try again shortly.");
-        setAiSummary('');
+        
+        const fallbackSummary = `This reading speaks to themes of ${selectedCards.map(c => c.name.toLowerCase()).join(', ')} in your ${category} life.`;
+        
+        const fallbackReading = selectedCards.map((card, index) => {
+            const interpretation = getInterpretation(card);
+            let meaning;
+            if ('meaning' in interpretation) {
+                meaning = interpretation.meaning;
+            } else {
+                meaning = interpretation.current;
+            }
+            return `The ${card.name} in the ${readingPositions[index]} position suggests: "${meaning}"`;
+        }).join('\n\n');
+
+        setAiSummary(fallbackSummary);
+        setAiReading(`The connection to the cosmos is faint. Here is the direct wisdom from the cards:\n\n${fallbackReading}`);
     } finally {
         setIsGenerating(false);
     }
@@ -377,6 +379,9 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
                            <p><strong>Divine:</strong> {interpretation.divine}</p>
                          </div>
                        )}
+                       <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3">
+                        <strong>In Context:</strong> {card.desc}
+                       </p>
                      </motion.div>
                   )}
                   </AnimatePresence>
