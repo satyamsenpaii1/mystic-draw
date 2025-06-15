@@ -46,7 +46,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(ellipse at bottom, hsl(263 43% 20%), hsl(var(--background)));
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('/photo-1470071459604-3b5ec3a7fe05') center center/cover no-repeat fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
