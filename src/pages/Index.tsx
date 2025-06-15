@@ -1,20 +1,31 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import Stars from "@/components/Stars";
 import TarotCard from '@/components/TarotCard';
 import { tarotDeckData } from '@/data/tarot-deck';
-import { TarotCardData } from '@/types/tarot';
+import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/tarot';
+import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Heart, Briefcase, Star, CrystalBall } from 'lucide-react';
 
-type GameState = 'welcome' | 'draw' | 'reading';
+type GameState = 'welcome' | 'category' | 'draw' | 'reading';
+
+const readingCategories: { name: ReadingCategory; label: string; icon: React.ReactNode }[] = [
+  { name: 'love', label: 'Love & Relationships', icon: <Heart className="w-8 h-8 mb-2" /> },
+  { name: 'career', label: 'Career & Finance', icon: <Briefcase className="w-8 h-8 mb-2" /> },
+  { name: 'spiritual', label: 'Spiritual Growth', icon: <Star className="w-8 h-8 mb-2" /> },
+  { name: 'general', label: 'General Guidance', icon: <CrystalBall className="w-8 h-8 mb-2" /> },
+];
+
+const readingPositions = ["The Foundation", "The Path", "The Destiny"];
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('welcome');
   const [deck, setDeck] = useState<TarotCardData[]>([]);
   const [selectedCards, setSelectedCards] = useState<TarotCardData[]>([]);
   const [revealedCards, setRevealedCards] = useState<boolean[]>([]);
+  const [category, setCategory] = useState<ReadingCategory | null>(null);
 
   const shuffleDeck = useCallback(() => {
     const newDeck = shuffle(tarotDeckData).map(card => ({
@@ -29,6 +40,11 @@ const Index = () => {
   }, [shuffleDeck]);
 
   const startGame = () => {
+    setGameState('category');
+  };
+
+  const handleCategorySelect = (selectedCategory: ReadingCategory) => {
+    setCategory(selectedCategory);
     setGameState('draw');
   };
 
@@ -59,7 +75,20 @@ const Index = () => {
     shuffleDeck();
     setSelectedCards([]);
     setRevealedCards([]);
+    setCategory(null);
     setGameState('welcome');
+  };
+
+  const getInterpretation = (card: TarotCardData): InterpretationDetail | { meaning: string } => {
+    if (!category) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+    
+    const cardInterpretation = interpretations[card.name];
+    if (!cardInterpretation) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+    
+    const categoryInterpretation = cardInterpretation[category];
+    if (!categoryInterpretation) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+    
+    return card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
   };
 
   const renderGameState = () => {
@@ -82,6 +111,40 @@ const Index = () => {
           </motion.div>
         );
       
+      case 'category':
+        return (
+            <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-center flex flex-col items-center justify-center h-full p-4"
+          >
+            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow">Choose Your Focus</h1>
+            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
+              Select the area of your life you'd like insight into.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {readingCategories.map((cat, index) => (
+                    <motion.div
+                        key={cat.name}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.15, type: 'spring', stiffness: 100 }}
+                    >
+                        <Button 
+                            variant="outline"
+                            className="h-auto w-48 flex-col p-6 bg-background/50 backdrop-blur-sm border-primary/30 hover:bg-primary/10 hover:border-primary/70 transition-all duration-300 group shadow-lg hover:shadow-primary/30"
+                            onClick={() => handleCategorySelect(cat.name)}
+                        >
+                           <div className="text-primary/70 group-hover:text-primary transition-colors duration-300">{cat.icon}</div>
+                           <span className="font-cinzel text-lg text-foreground group-hover:text-primary transition-colors duration-300">{cat.label}</span>
+                        </Button>
+                    </motion.div>
+                ))}
+            </div>
+          </motion.div>
+        );
+
       case 'draw':
         const cardsToDisplay = deck.slice(0, 21); // Show a subset for visual appeal
         return (
@@ -124,9 +187,12 @@ const Index = () => {
       case 'reading':
         return (
           <div className="flex flex-col items-center justify-center w-full h-full p-4">
-            <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-6 text-center">Your Reading</h2>
+            <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-2 text-center">Your {category ? readingCategories.find(c => c.name === category)?.label : ''} Reading</h2>
+            <p className="font-lato text-foreground/70 mb-6 text-center">Here lies the wisdom you seek.</p>
             <div className="flex flex-col md:flex-row justify-center items-start gap-6 md:gap-8 mb-8">
-              {selectedCards.map((card, index) => (
+              {selectedCards.map((card, index) => {
+                const interpretation = getInterpretation(card);
+                return (
                 <motion.div 
                   key={index}
                   initial={{ opacity: 0, y: 50 }}
@@ -134,6 +200,7 @@ const Index = () => {
                   transition={{ delay: index * 0.3 }}
                   className="flex flex-col items-center gap-4"
                 >
+                  <h4 className="font-cinzel text-xl text-primary/80">{readingPositions[index]}</h4>
                   <TarotCard
                     card={card}
                     isFlipped={true}
@@ -145,17 +212,27 @@ const Index = () => {
                      <motion.div 
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
-                        className="text-center max-w-xs bg-black/20 p-4 rounded-lg"
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                        className="text-center max-w-xs bg-black/20 p-4 rounded-lg w-full"
                      >
                        <h3 className="font-cinzel text-xl text-primary">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
-                       <p className="font-lato text-sm text-foreground/80 mt-2">
-                        <strong>Meaning:</strong> {card.reversed ? card.meaning_rev : card.meaning_up}
-                       </p>
+                       {'meaning' in interpretation ? (
+                          <p className="font-lato text-sm text-foreground/80 mt-2">
+                             {interpretation.meaning}
+                          </p>
+                       ) : (
+                         <div className="font-lato text-sm text-left text-foreground/80 mt-2 space-y-3">
+                           <p><strong>Current Situation:</strong> {interpretation.current}</p>
+                           <p><strong>Future Guidance:</strong> {interpretation.future}</p>
+                           <p><strong>Divine Message:</strong> {interpretation.divine}</p>
+                         </div>
+                       )}
                      </motion.div>
                   )}
                   </AnimatePresence>
                 </motion.div>
-              ))}
+                )
+              })}
             </div>
             {revealedCards.every(r => r) && (
               <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 0.5}}>
