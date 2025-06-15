@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import Stars from "@/components/Stars";
@@ -7,7 +8,7 @@ import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/ta
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Briefcase, Star, CrystalBall } from 'lucide-react';
+import { Heart, Briefcase, Star, Sparkles } from 'lucide-react';
 
 type GameState = 'welcome' | 'category' | 'draw' | 'reading';
 
@@ -15,7 +16,7 @@ const readingCategories: { name: ReadingCategory; label: string; icon: React.Rea
   { name: 'love', label: 'Love & Relationships', icon: <Heart className="w-8 h-8 mb-2" /> },
   { name: 'career', label: 'Career & Finance', icon: <Briefcase className="w-8 h-8 mb-2" /> },
   { name: 'spiritual', label: 'Spiritual Growth', icon: <Star className="w-8 h-8 mb-2" /> },
-  { name: 'general', label: 'General Guidance', icon: <CrystalBall className="w-8 h-8 mb-2" /> },
+  { name: 'general', label: 'General Guidance', icon: <Sparkles className="w-8 h-8 mb-2" /> },
 ];
 
 const readingPositions = ["The Foundation", "The Path", "The Destiny"];
