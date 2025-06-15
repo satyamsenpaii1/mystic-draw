@@ -87,22 +87,27 @@ const Index = () => {
         return (
             <div className="flex flex-col items-center justify-center w-full h-full">
                 <h2 className="text-3xl font-cinzel text-primary/90 mb-8 animate-fade-in">Choose 3 cards that call to you.</h2>
-                <div className="relative w-full h-96 flex items-center justify-center">
+                <div className="relative w-full h-[30rem] flex items-center justify-center">
                     {cardsToDisplay.map((card, index) => {
-                        const angle = (index - (cardsToDisplay.length - 1) / 2) * 8;
+                        const angle = (index - (cardsToDisplay.length - 1) / 2) * 7;
                         const isSelected = selectedCards.includes(card);
+                        
                         return (
                              <motion.div
-                                key={index}
-                                initial={{ y: 200, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ delay: index * 0.05 }}
-                                style={{
-                                    transform: `rotate(${angle}deg) translateY(${isSelected ? '-20px' : '0px'})`,
-                                    transformOrigin: 'bottom center',
-                                    zIndex: isSelected ? 100 : index,
+                                key={card.name}
+                                initial={{ y: 200, opacity: 0, rotate: angle }}
+                                animate={{ 
+                                    y: isSelected ? -40 : 0, 
+                                    opacity: 1,
+                                    rotate: angle,
                                 }}
-                                className="absolute transition-transform duration-300 ease-in-out hover:!scale-110 hover:!z-50"
+                                whileHover={{ scale: 1.1, zIndex: 50, y: isSelected ? -40 : -10 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
+                                style={{
+                                    transformOrigin: '50% 25rem',
+                                    zIndex: isSelected ? 100 : index,
+                                    position: 'absolute',
+                                }}
                             >
                                 <TarotCard
                                     card={card}

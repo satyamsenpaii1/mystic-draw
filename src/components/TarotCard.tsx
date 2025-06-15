@@ -20,6 +20,7 @@ const TarotCard = ({ card, isFlipped, onClick, className, isRevealed }: TarotCar
       className={cn(
         `perspective-1000 transform-style-3d transition-transform duration-1000`,
         cardWidth,
+        { 'cursor-pointer': !!onClick },
         className
       )}
       style={{ aspectRatio: cardAspectRatio }}
@@ -32,7 +33,7 @@ const TarotCard = ({ card, isFlipped, onClick, className, isRevealed }: TarotCar
         )}
       >
         {/* Card Back */}
-        <div className="absolute w-full h-full backface-hidden rounded-lg bg-secondary border-2 border-primary/50 flex items-center justify-center p-2 shadow-[0_0_15px_hsl(var(--primary)/0.5)] cursor-pointer">
+        <div className="absolute w-full h-full backface-hidden rounded-lg bg-secondary border-2 border-primary/50 flex items-center justify-center p-2 shadow-[0_0_15px_hsl(var(--primary)/0.5)]">
            <div className="w-full h-full border-2 border-primary/30 rounded-md flex items-center justify-center">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-primary/50">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.77 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
