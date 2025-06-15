@@ -38,6 +38,7 @@ const Index = () => {
   const [isModelLoading, setIsModelLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiReading, setAiReading] = useState<string>('');
+  const [aiSummary, setAiSummary] = useState<string>('');
 
   useEffect(() => {
     const loadModel = async () => {
@@ -114,6 +115,7 @@ const Index = () => {
     setRevealedCards([]);
     setCategory(null);
     setAiReading('');
+    setAiSummary('');
     setGameState('welcome');
   };
 
@@ -130,7 +132,7 @@ const Index = () => {
   };
 
   const generateAIReading = useCallback(async () => {
-    if (!generator || !category || isGenerating || aiReading) return;
+    if (!generator || !category || isGenerating || aiReading || aiSummary) return;
     setIsGenerating(true);
 
     const cardDetails = selectedCards.map((card, index) => {
@@ -150,7 +152,9 @@ A querent has come to you seeking guidance about their ${category}.
 You have drawn the following cards for them:
 ${cardDetails}
 
-Please provide a detailed, insightful, and flowing narrative for their tarot reading. Weave the meanings of the cards and their positions together into a cohesive story. Address the querent directly. Structure your response into three distinct paragraphs:
+First, provide a very concise, 2-3 sentence summary of the entire reading. This summary should capture the core message and most important advice. Start this section with "SUMMARY:".
+
+After the summary, provide a more detailed, insightful, and flowing narrative for their tarot reading. Weave the meanings of the cards and their positions together into a cohesive story. Address the querent directly. Structure your response into three distinct paragraphs:
 
 1.  **Your Present Path:** Begin by analyzing their current situation, the energies surrounding them, and the immediate challenges or opportunities as revealed by the cards.
 
@@ -169,22 +173,39 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
             repetition_penalty: 1.1,
         });
         const fullText = result[0].generated_text;
-        // Clean up the output by removing the prompt part
-        const readingText = fullText.substring(fullText.indexOf("Your Present Path:"));
-        setAiReading(readingText.trim());
+        
+        const summaryMarker = "SUMMARY:";
+        const detailedReadingMarker = "Your Present Path:";
+        
+        // Find the last occurence in case the marker is in the prompt
+        const summaryStartIndex = fullText.lastIndexOf(summaryMarker);
+        const detailedReadingStartIndex = fullText.lastIndexOf(detailedReadingMarker);
+
+        if (summaryStartIndex !== -1 && detailedReadingStartIndex !== -1 && summaryStartIndex < detailedReadingStartIndex) {
+            const summary = fullText.substring(summaryStartIndex + summaryMarker.length, detailedReadingStartIndex).trim();
+            const detailed = fullText.substring(detailedReadingStartIndex).trim();
+            setAiSummary(summary);
+            setAiReading(detailed);
+        } else {
+            const readingTextStartIndex = fullText.lastIndexOf("Your Present Path:");
+            const readingText = readingTextStartIndex > -1 ? fullText.substring(readingTextStartIndex) : "Could not parse the reading. The spirits are mysterious today.";
+            setAiReading(readingText.trim());
+            setAiSummary('');
+        }
     } catch (error) {
         console.error("Failed to generate AI reading:", error);
         setAiReading("Apologies, the connection to the spirit world is unclear at this moment. The cosmos asks for a moment of peace. Please try again shortly.");
+        setAiSummary('');
     } finally {
         setIsGenerating(false);
     }
-  }, [generator, category, selectedCards, readingPositions, getInterpretation, aiReading, isGenerating]);
+  }, [generator, category, selectedCards, readingPositions, getInterpretation, aiReading, aiSummary, isGenerating]);
   
   useEffect(() => {
-    if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading) {
+    if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading && !aiSummary) {
         generateAIReading();
     }
-  }, [gameState, revealedCards, aiReading, generateAIReading]);
+  }, [gameState, revealedCards, aiReading, aiSummary, generateAIReading]);
 
   const renderGameState = () => {
     switch (gameState) {
@@ -356,12 +377,6 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
                            <p><strong>Divine:</strong> {interpretation.divine}</p>
                          </div>
                        )}
-                       <div className="mt-3 pt-3 border-t border-primary/20">
-                         <h4 className="font-cinzel text-base text-primary/90 mb-1">In Context</h4>
-                         <p className="font-lato text-sm text-foreground/80 text-left">
-                           {card.desc}
-                         </p>
-                       </div>
                      </motion.div>
                   )}
                   </AnimatePresence>
@@ -384,6 +399,17 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
                                 <p className="font-cinzel text-xl">The spirits are whispering...</p>
                             </div>
                         }
+                        {aiSummary && (
+                            <motion.div 
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-primary/10 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/30 mb-8"
+                            >
+                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow">Your Reading's Essence</h3>
+                                <p className="text-center font-lato text-lg text-foreground/90 whitespace-pre-wrap">{aiSummary}</p>
+                            </motion.div>
+                        )}
                         {aiReading && (
                             <div className="bg-black/30 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/20">
                                 <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow">A Message from the Cosmos</h3>
