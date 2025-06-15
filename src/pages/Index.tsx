@@ -197,7 +197,7 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full animate-fade-in"
           >
-            <h1 className="text-5xl md:text-7xl font-cinzel text-primary animate-glow">Mystic Draw</h1>
+            <h1 className="text-5xl md:text-7xl font-cinzel text-primary animate-glow backface-hidden">Mystic Draw</h1>
             <p className="mt-4 mb-8 text-lg md:text-xl max-w-2xl font-lato text-foreground/80">
               Ask the deck your question, clear your mind, and when you're ready, draw your cards to reveal the truth.
             </p>
@@ -215,7 +215,7 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full p-4"
           >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow">Choose Your Spread</h1>
+            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Spread</h1>
             <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
               Select the layout that best fits your question.
             </p>
@@ -249,7 +249,7 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full p-4"
           >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow">Choose Your Focus</h1>
+            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Focus</h1>
             <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
               Select the area of your life you'd like insight into.
             </p>
@@ -288,6 +288,7 @@ const Index = () => {
                         return (
                              <motion.div
                                 key={card.name}
+                                className="backface-hidden"
                                 initial={{ y: 200, opacity: 0, rotate: angle }}
                                 animate={{ 
                                     y: isSelected ? -40 : 0, 
@@ -328,7 +329,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.3 }}
-                  className="flex flex-col items-center gap-4"
+                  className="flex flex-col items-center gap-4 backface-hidden"
                 >
                   <h4 className="font-cinzel text-xl text-primary/80">{readingPositions[index]}</h4>
                   <TarotCard
@@ -389,13 +390,13 @@ const Index = () => {
                                 transition={{ delay: 0.2 }}
                                 className="bg-primary/10 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/30 mb-8"
                             >
-                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow">Your Reading's Essence</h3>
+                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">Your Reading's Essence</h3>
                                 <p className="text-center font-lato text-lg text-foreground/90 whitespace-pre-wrap">{aiSummary}</p>
                             </motion.div>
                         )}
                         {aiReading && (
                             <div className="bg-black/30 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/20">
-                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow">A Message from the Cosmos</h3>
+                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">A Message from the Cosmos</h3>
                                 <div className="text-left font-lato text-lg text-foreground/90 whitespace-pre-wrap space-y-4">
                                   {aiReading.split('\n\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
                                 </div>

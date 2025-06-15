@@ -4,6 +4,7 @@
 @tailwind utilities;
 
 @layer base {
+  /* ... keep existing code (:root variables) */
   :root {
     --background: 263 43% 11%; /* Deep Purple */
     --foreground: 230 50% 95%; /* Soft White */
@@ -46,5 +47,15 @@
   body {
     @apply bg-background text-foreground;
     background: radial-gradient(ellipse at bottom, hsl(263 43% 20%), hsl(var(--background)));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@layer utilities {
+  .backface-hidden {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
   }
 }
