@@ -8,7 +8,6 @@ import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater } from 'lucide-react';
-import { pipeline } from '@huggingface/transformers';
 
 type SpreadType = 3 | 5 | 7;
 type GameState = 'welcome' | 'spread' | 'category' | 'draw' | 'reading';
@@ -34,27 +33,9 @@ const Index = () => {
   const [category, setCategory] = useState<ReadingCategory | null>(null);
   const [spread, setSpread] = useState<SpreadType>(3);
   const [readingPositions, setReadingPositions] = useState<string[]>(spreadOptions[0].positions);
-  const [generator, setGenerator] = useState<any>(null);
-  const [isModelLoading, setIsModelLoading] = useState<boolean>(true);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiReading, setAiReading] = useState<string>('');
   const [aiSummary, setAiSummary] = useState<string>('');
-
-  useEffect(() => {
-    const loadModel = async () => {
-        try {
-            // Using a smaller, conversational model suitable for this task
-            const modelPipeline = await pipeline('text-generation', 'Xenova/distilgpt2');
-            setGenerator(() => modelPipeline);
-        } catch (error) {
-            console.error("Failed to load AI model:", error);
-            // Maybe add a toast here to inform the user
-        } finally {
-            setIsModelLoading(false);
-        }
-    };
-    loadModel();
-  }, []);
 
   const shuffleDeck = useCallback(() => {
     const newDeck = shuffle(tarotDeckData).map(card => ({
@@ -131,83 +112,80 @@ const Index = () => {
     return card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
   };
 
-  const generateAIReading = useCallback(async () => {
-    if (!generator || !category || isGenerating || (aiReading && aiSummary)) return;
+  const generateAIReading = useCallback(() => {
+    if (isGenerating || !category) return;
     setIsGenerating(true);
 
-    const cardDetails = selectedCards.map((card, index) => {
-        const position = readingPositions[index];
-        const interpretation = getInterpretation(card);
-        let meaning;
-        if ('meaning' in interpretation) {
-            meaning = interpretation.meaning;
-        } else {
-            meaning = `Current situation: ${interpretation.current}, Future guidance: ${interpretation.future}, Divine message: ${interpretation.divine}`;
-        }
-        return `${index + 1}. ${position}: ${card.name} ${card.reversed ? '(Reversed)' : ''}. Traditional meaning: ${meaning}. Context: ${card.desc}`;
-    }).join('\n');
-
-    const prompt = `You are a wise, compassionate tarot reader.
-A querent is asking for guidance on "${category}".
-Here are their cards:
-${cardDetails}
-
-Please provide a reading in two parts.
-First, write a concise 2-3 sentence summary of the core message.
-Then, on a new line, write "---" as a separator.
-Finally, write a detailed, flowing narrative in three paragraphs that weaves the cards together into a cohesive story.`;
-
-    try {
-        const result = await generator(prompt, {
-            max_new_tokens: 512,
-            temperature: 0.75,
-            top_k: 50,
-            do_sample: true,
+    // Simulate a brief moment of cosmic contemplation
+    setTimeout(() => {
+        const majorArcana = tarotDeckData.slice(0, 22).map(c => c.name);
+        const majorArcanaCount = selectedCards.filter(c => majorArcana.includes(c.name)).length;
+        
+        const suits: { [key: string]: number } = { Wands: 0, Cups: 0, Swords: 0, Pentacles: 0 };
+        selectedCards.forEach(card => {
+            if (card.name.includes('Wands')) suits.Wands++;
+            else if (card.name.includes('Cups')) suits.Cups++;
+            else if (card.name.includes('Swords')) suits.Swords++;
+            else if (card.name.includes('Pentacles')) suits.Pentacles++;
         });
-        const fullText = result[0].generated_text;
-        
-        // The model output often includes the prompt, so we slice it off if present.
-        const generatedTextOnly = fullText.startsWith(prompt) ? fullText.slice(prompt.length) : fullText;
-        const cleanText = generatedTextOnly.trim();
-        
-        const parts = cleanText.split('---');
 
-        if (parts.length >= 2) {
-            setAiSummary(parts[0].trim());
-            setAiReading(parts.slice(1).join('---').trim());
-        } else {
-            // Fallback if the "---" separator is not found
-            setAiReading(cleanText);
-            setAiSummary("Here is the essence of your reading.");
+        let summary = "The cards offer a multifaceted perspective on your situation. ";
+        if (majorArcanaCount / selectedCards.length >= 0.5) {
+            summary += "Significant life lessons and major themes are at play, as indicated by the presence of several Major Arcana cards. ";
         }
-    } catch (error) {
-        console.error("Failed to generate AI reading:", error);
-        
-        const fallbackSummary = `This reading speaks to themes of ${selectedCards.map(c => c.name.toLowerCase()).join(', ')} in your ${category} life.`;
-        
-        const fallbackReading = selectedCards.map((card, index) => {
+
+        const dominantSuit = Object.keys(suits).reduce((a, b) => suits[a] > suits[b] ? a : b);
+        if (suits[dominantSuit] > 0) {
+            const suitThemes: { [key: string]: string } = {
+                Wands: 'energy, passion, and creativity',
+                Cups: 'emotions, relationships, and intuition',
+                Swords: 'thoughts, challenges, and communication',
+                Pentacles: 'material aspects, career, and finances'
+            };
+            summary += `There is a strong focus on ${suitThemes[dominantSuit]}.`;
+        } else {
+            summary += "Pay close attention to the interplay of forces in your life."
+        }
+        setAiSummary(summary);
+
+        let reading = "";
+        selectedCards.forEach((card, index) => {
+            const position = readingPositions[index];
             const interpretation = getInterpretation(card);
+            const cardName = `${card.name} ${card.reversed ? '(Reversed)' : ''}`;
+            
             let meaning;
             if ('meaning' in interpretation) {
                 meaning = interpretation.meaning;
             } else {
-                meaning = interpretation.current;
+                meaning = `for your current situation, it speaks of '${interpretation.current}'. Looking to the future, it advises on '${interpretation.future}'. The divine message is to understand '${interpretation.divine}'.`;
             }
-            return `The ${card.name} in the ${readingPositions[index]} position suggests: "${meaning}"`;
-        }).join('\n\n');
 
-        setAiSummary(fallbackSummary);
-        setAiReading(`The connection to the cosmos is faint. Here is the direct wisdom from the cards:\n\n${fallbackReading}`);
-    } finally {
+            const narrativeIntro = [
+                `Your reading begins with the ${position}, represented by the ${cardName}. This card suggests that`,
+                `Following this, the ${cardName} appears in the ${position} position, highlighting that`,
+                `Next, the cards reveal the ${cardName} for your ${position}, indicating that`,
+                `Moving on, the ${cardName} in the ${position} position sheds light on the fact that`,
+                `Then, we see the ${cardName} in the ${position} position, which implies that`,
+                `As we near the conclusion, the ${cardName} stands for the ${position}, suggesting`,
+                `Finally, in the ${position} position, the ${cardName} points towards a potential outcome. It indicates that`
+            ];
+
+            reading += `${narrativeIntro[index] || `For the ${position}, the ${cardName} suggests that`} ${meaning}\n\n`;
+        });
+        
+        reading += `This reading encourages you to reflect on these interconnected messages as you move forward.`;
+
+        setAiReading(reading);
         setIsGenerating(false);
-    }
-  }, [generator, category, selectedCards, readingPositions, getInterpretation, aiReading, aiSummary, isGenerating]);
+    }, 1500); // 1.5 second delay for dramatic effect
+  }, [selectedCards, category, readingPositions, isGenerating, getInterpretation]);
   
   useEffect(() => {
-    if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading && !aiSummary) {
+    if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading && !aiSummary && !isGenerating) {
         generateAIReading();
     }
-  }, [gameState, revealedCards, aiReading, aiSummary, generateAIReading]);
+  }, [gameState, revealedCards, aiReading, aiSummary, isGenerating, generateAIReading]);
 
   const renderGameState = () => {
     switch (gameState) {
@@ -223,8 +201,8 @@ Finally, write a detailed, flowing narrative in three paragraphs that weaves the
             <p className="mt-4 mb-8 text-lg md:text-xl max-w-2xl font-lato text-foreground/80">
               Ask the deck your question, clear your mind, and when you're ready, draw your cards to reveal the truth.
             </p>
-            <Button onClick={startGame} size="lg" className="font-cinzel text-lg" disabled={isModelLoading}>
-              {isModelLoading ? 'Warming up the cosmos...' : 'Start Reading'}
+            <Button onClick={startGame} size="lg" className="font-cinzel text-lg">
+              Start Reading
             </Button>
           </motion.div>
         );
