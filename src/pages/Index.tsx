@@ -423,7 +423,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-background font-lato text-foreground flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen w-full font-lato text-foreground flex items-center justify-center relative overflow-hidden">
       <AnimatePresence mode="wait">
         <div key={gameState} className="w-full h-screen flex items-center justify-center">
             {renderGameState()}
