@@ -1,7 +1,3 @@
-
-// Abridged for brevity. Full deck data would be here.
-// In a real implementation this would be all 78 cards.
-// I will include all 78 cards as requested.
 export const tarotDeckData = [
   {
     "name": "The Fool",
@@ -418,7 +414,7 @@ export const tarotDeckData = [
     "desc": "Signifies financial hardship and a sense of isolation. It represents a difficult time of struggle, but also reminds you to seek help and not lose hope."
   },
   {
-    "name":a": "Six of Pentacles",
+    "name": "Six of Pentacles",
     "meaning_up": "Giving, receiving, sharing wealth, generosity, charity",
     "meaning_rev": "Self-care, unpaid debts, one-sided charity",
     "desc": "A card of generosity and the flow of giving and receiving. It represents a state of financial balance where you are able to both give and receive support."

@@ -356,9 +356,12 @@ Write in a mystical, yet clear and encouraging tone. Do not simply list the card
                            <p><strong>Divine:</strong> {interpretation.divine}</p>
                          </div>
                        )}
-                       <p className="font-lato text-xs text-foreground/70 mt-3 pt-3 border-t border-primary/20 italic">
-                         {card.desc}
-                       </p>
+                       <div className="mt-3 pt-3 border-t border-primary/20">
+                         <h4 className="font-cinzel text-base text-primary/90 mb-1">In Context</h4>
+                         <p className="font-lato text-sm text-foreground/80 text-left">
+                           {card.desc}
+                         </p>
+                       </div>
                      </motion.div>
                   )}
                   </AnimatePresence>
