@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import Stars from "@/components/Stars";
 import TarotCard from '@/components/TarotCard';
 import { tarotDeckData } from '@/data/tarot-deck';
 import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/tarot';
@@ -425,7 +424,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full bg-background font-lato text-foreground flex items-center justify-center relative overflow-hidden">
-      <Stars />
       <AnimatePresence mode="wait">
         <div key={gameState} className="w-full h-screen flex items-center justify-center">
             {renderGameState()}
