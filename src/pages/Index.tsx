@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
 import Stars from "@/components/Stars";
@@ -7,7 +8,7 @@ import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/ta
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Briefcase, Star, Sparkles, Wand, Swords, Cups } from 'lucide-react';
+import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater } from 'lucide-react';
 import { pipeline } from '@huggingface/transformers';
 
 type SpreadType = 3 | 5 | 7;
@@ -21,7 +22,7 @@ const readingCategories: { name: ReadingCategory; label: string; icon: React.Rea
 ];
 
 const spreadOptions: { name: string; count: SpreadType; positions: string[], icon: React.ReactNode }[] = [
-  { name: '3-Card Spread', count: 3, positions: ["Past", "Present", "Future"], icon: <Cups className="w-8 h-8 mb-2" /> },
+  { name: '3-Card Spread', count: 3, positions: ["Past", "Present", "Future"], icon: <GlassWater className="w-8 h-8 mb-2" /> },
   { name: '5-Card Spread', count: 5, positions: ["Situation", "Challenge", "Past", "Future", "Outcome"], icon: <Wand className="w-8 h-8 mb-2" /> },
   { name: '7-Card Spread', count: 7, positions: ["Self", "Challenge", "Past", "Future", "Advice", "Hopes/Fears", "Outcome"], icon: <Swords className="w-8 h-8 mb-2" /> },
 ];
