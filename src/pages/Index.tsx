@@ -196,8 +196,8 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full animate-fade-in"
           >
-            <h1 className="text-5xl md:text-7xl font-cinzel text-primary animate-glow backface-hidden">Mystic Draw</h1>
-            <p className="mt-4 mb-8 text-lg md:text-xl max-w-2xl font-lato text-foreground/80">
+            <h1 className="text-5xl md:text-7xl font-cinzel text-primary animate-glow backface-hidden crisp-text">Mystic Draw</h1>
+            <p className="mt-4 mb-8 text-lg md:text-xl max-w-2xl font-lato text-foreground/80 crisp-text">
               Ask the deck your question, clear your mind, and when you're ready, draw your cards to reveal the truth.
             </p>
             <Button onClick={startGame} size="lg" className="font-cinzel text-lg">
@@ -214,8 +214,8 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full p-4"
           >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Spread</h1>
-            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden crisp-text">Choose Your Spread</h1>
+            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl crisp-text">
               Select the layout that best fits your question.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -248,8 +248,8 @@ const Index = () => {
             exit={{ opacity: 0 }}
             className="text-center flex flex-col items-center justify-center h-full p-4"
           >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Focus</h1>
-            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
+            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden crisp-text">Choose Your Focus</h1>
+            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl crisp-text">
               Select the area of your life you'd like insight into.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -278,7 +278,7 @@ const Index = () => {
         const cardsToDisplay = deck.slice(0, 21); // Show a subset for visual appeal
         return (
             <div className="flex flex-col items-center justify-center w-full h-full">
-                <h2 className="text-3xl font-cinzel text-primary/90 mb-8 animate-fade-in">Choose {spread} cards that call to you.</h2>
+                <h2 className="text-3xl font-cinzel text-primary/90 mb-8 animate-fade-in crisp-text">Choose {spread} cards that call to you.</h2>
                 <div className="relative w-full h-[30rem] flex items-center justify-center">
                     {cardsToDisplay.map((card, index) => {
                         const angle = (index - (cardsToDisplay.length - 1) / 2) * 7;
@@ -317,8 +317,8 @@ const Index = () => {
       case 'reading':
         return (
           <div className="flex flex-col items-center w-full h-full p-4 overflow-y-auto pt-24 pb-12">
-            <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-2 text-center">Your {category ? readingCategories.find(c => c.name === category)?.label : ''} Reading</h2>
-            <p className="font-lato text-foreground/70 mb-6 text-center">Here lies the wisdom you seek.</p>
+            <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-2 text-center crisp-text">Your {category ? readingCategories.find(c => c.name === category)?.label : ''} Reading</h2>
+            <p className="font-lato text-foreground/70 mb-6 text-center crisp-text">Here lies the wisdom you seek.</p>
             <div className="flex flex-wrap justify-center items-start gap-6 md:gap-8 mb-8">
               {selectedCards.map((card, index) => {
                 const interpretation = getInterpretation(card);
@@ -330,7 +330,7 @@ const Index = () => {
                   transition={{ delay: index * 0.3 }}
                   className="flex flex-col items-center gap-4 backface-hidden"
                 >
-                  <h4 className="font-cinzel text-xl text-primary/80">{readingPositions[index]}</h4>
+                  <h4 className="font-cinzel text-xl text-primary/80 crisp-text">{readingPositions[index]}</h4>
                   <TarotCard
                     card={card}
                     isFlipped={true}
@@ -345,19 +345,19 @@ const Index = () => {
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         className="text-center max-w-xs bg-black/20 p-4 rounded-lg w-full"
                      >
-                       <h3 className="font-cinzel text-xl text-primary">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
+                       <h3 className="font-cinzel text-xl text-primary crisp-text">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
                        {'meaning' in interpretation ? (
-                          <p className="font-lato text-sm text-foreground/80 mt-2">
+                          <p className="font-lato text-sm text-foreground/80 mt-2 crisp-text">
                              {interpretation.meaning}
                           </p>
                        ) : (
-                         <div className="font-lato text-sm text-left text-foreground/80 mt-2 space-y-3">
+                         <div className="font-lato text-sm text-left text-foreground/80 mt-2 space-y-3 crisp-text">
                            <p><strong>Current:</strong> {interpretation.current}</p>
                            <p><strong>Future:</strong> {interpretation.future}</p>
                            <p><strong>Divine:</strong> {interpretation.divine}</p>
                          </div>
                        )}
-                       <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3">
+                       <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3 crisp-text">
                         <strong>In Context:</strong> {card.desc}
                        </p>
                      </motion.div>
@@ -379,7 +379,7 @@ const Index = () => {
                         {isGenerating && 
                             <div className="flex flex-col items-center gap-4 text-primary/80 animate-pulse">
                                 <Sparkles className="w-10 h-10"/>
-                                <p className="font-cinzel text-xl">The spirits are whispering...</p>
+                                <p className="font-cinzel text-xl crisp-text">The spirits are whispering...</p>
                             </div>
                         }
                         {aiSummary && (
@@ -389,14 +389,14 @@ const Index = () => {
                                 transition={{ delay: 0.2 }}
                                 className="bg-primary/10 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/30 mb-8"
                             >
-                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">Your Reading's Essence</h3>
-                                <p className="text-center font-lato text-lg text-foreground/90 whitespace-pre-wrap">{aiSummary}</p>
+                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden crisp-text">Your Reading's Essence</h3>
+                                <p className="text-center font-lato text-lg text-foreground/90 whitespace-pre-wrap crisp-text">{aiSummary}</p>
                             </motion.div>
                         )}
                         {aiReading && (
                             <div className="bg-black/30 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/20">
-                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">A Message from the Cosmos</h3>
-                                <div className="text-left font-lato text-lg text-foreground/90 whitespace-pre-wrap space-y-4">
+                                <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden crisp-text">A Message from the Cosmos</h3>
+                                <div className="text-left font-lato text-lg text-foreground/90 whitespace-pre-wrap space-y-4 crisp-text">
                                   {aiReading.split('\n\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
                                 </div>
                             </div>
@@ -413,7 +413,7 @@ const Index = () => {
               </motion.div>
             )}
              {!revealedCards.every(r => r) && (
-                 <p className="font-lato text-foreground/70 mt-4 animate-pulse">Click each card to reveal its meaning.</p>
+                 <p className="font-lato text-foreground/70 mt-4 animate-pulse crisp-text">Click each card to reveal its meaning.</p>
              )}
           </div>
         );

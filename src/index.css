@@ -5,39 +5,6 @@
 
 @layer base {
   /* ... keep existing code (:root variables) */
-  :root {
-    --background: 263 43% 11%; /* Deep Purple */
-    --foreground: 230 50% 95%; /* Soft White */
-
-    --card: 263 43% 13%;
-    --card-foreground: 230 50% 95%;
-
-    --popover: 263 43% 11%;
-    --popover-foreground: 230 50% 95%;
-
-    --primary: 43 96% 56%; /* Gold */
-    --primary-foreground: 263 43% 11%;
-
-    --secondary: 263 43% 20%;
-    --secondary-foreground: 43 96% 56%;
-
-    --muted: 263 43% 20%;
-    --muted-foreground: 230 20% 65%;
-
-    --accent: 263 43% 25%;
-    --accent-foreground: 43 96% 56%;
-
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 230 50% 95%;
-
-    --border: 263 43% 20%;
-    --input: 263 43% 20%;
-    --ring: 43 96% 56%;
-
-    --radius: 0.5rem;
-  }
-
-  /* No dark class needed if it's the default */
 }
 
 @layer base {
@@ -57,5 +24,21 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transform: translateZ(0);
+  }
+
+  .crisp-text {
+    /* Forces hardware acceleration to prevent blurring of text during transforms */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    /* Improves text rendering, especially for smaller font sizes */
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Better font smoothing for high-DPI (Retina) displays */
+  @media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+    body {
+      -webkit-font-smoothing: subpixel-antialiased;
+      -moz-osx-font-smoothing: auto;
+    }
   }
 }
