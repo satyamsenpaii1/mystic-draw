@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import TarotCard from '@/components/TarotCard';
 import { tarotDeckData } from '@/data/tarot-deck';
 import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/tarot';
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater } from 'lucide-react';
+import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater, Linkedin, Mail } from 'lucide-react';
 
 type SpreadType = 3 | 5 | 7;
 type GameState = 'welcome' | 'spread' | 'category' | 'draw' | 'reading';
@@ -39,7 +41,7 @@ const Index = () => {
   const shuffleDeck = useCallback(() => {
     const newDeck = shuffle(tarotDeckData).map(card => ({
       ...card,
-      reversed: Math.random() < 0.5 // 50% chance of being reversed
+      reversed: Math.random() < 0.5
     }));
     setDeck(newDeck);
   }, []);
@@ -115,7 +117,6 @@ const Index = () => {
     if (isGenerating || !category) return;
     setIsGenerating(true);
 
-    // Simulate a brief moment of cosmic contemplation
     setTimeout(() => {
         const majorArcana = tarotDeckData.slice(0, 22).map(c => c.name);
         const majorArcanaCount = selectedCards.filter(c => majorArcana.includes(c.name)).length;
@@ -177,7 +178,7 @@ const Index = () => {
 
         setAiReading(reading);
         setIsGenerating(false);
-    }, 1500); // 1.5 second delay for dramatic effect
+    }, 1500);
   }, [selectedCards, category, readingPositions, isGenerating, getInterpretation]);
   
   useEffect(() => {
@@ -275,7 +276,7 @@ const Index = () => {
         );
 
       case 'draw':
-        const cardsToDisplay = deck.slice(0, 21); // Show a subset for visual appeal
+        const cardsToDisplay = deck.slice(0, 21);
         return (
             <div className="flex flex-col items-center justify-center w-full h-full">
                 <h2 className="text-3xl font-cinzel text-primary/90 mb-8 animate-fade-in">Choose {spread} cards that call to you.</h2>
@@ -424,11 +425,140 @@ const Index = () => {
 
   return (
     <div className="min-h-screen w-full bg-background font-lato text-foreground flex items-center justify-center relative overflow-hidden">
-      <AnimatePresence mode="wait">
-        <div key={gameState} className="w-full h-screen flex items-center justify-center">
-            {renderGameState()}
-        </div>
-      </AnimatePresence>
+      <div className="w-full h-screen flex flex-col">
+        <Tabs defaultValue="home" className="w-full h-full flex flex-col">
+          <TabsList className="mx-auto mt-4 bg-background/50 backdrop-blur-sm border border-primary/30">
+            <TabsTrigger 
+              value="home" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-cinzel text-lg px-6"
+            >
+              Home
+            </TabsTrigger>
+            <TabsTrigger 
+              value="about" 
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-cinzel text-lg px-6"
+            >
+              About Us
+            </TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="home" className="flex-1 mt-0">
+            <AnimatePresence mode="wait">
+              <div key={gameState} className="w-full h-full flex items-center justify-center">
+                {renderGameState()}
+              </div>
+            </AnimatePresence>
+          </TabsContent>
+          
+          <TabsContent value="about" className="flex-1 mt-0 overflow-y-auto">
+            <div className="max-w-4xl mx-auto p-8 space-y-8">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-center"
+              >
+                <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-8 animate-glow backface-hidden">About Mystic Draw</h1>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
+              >
+                <div className="font-lato text-lg text-foreground/90 space-y-4 leading-relaxed">
+                  <p>Hey, I'm <strong className="text-primary">Satyam Chaudhary</strong>.</p>
+                  <p>I built Mystic Draw as a small side project while exploring new ways to create web apps using AI.</p>
+                  <p>This app was made using <strong>Lovable.dev</strong>, an AI-powered platform that enables rapid web development through natural language descriptions. This project showcases the power of <strong>Vibe Coding</strong> - a development approach where you describe what you want rather than writing traditional code line by line.</p>
+                  <p>For the AI tarot readings, I used <strong>Google's Gemini model</strong> to make sure each card gives a real, meaningful response based on your actual choice — not something random.</p>
+                  <p>This project mixes something ancient (tarot) with something new (AI), and for me, it's just one way of learning by building — combining old ideas with modern tools.</p>
+                  <p>Thanks for trying it out :)</p>
+                  <p className="text-right italic text-primary">— Satyam</p>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="technical-details" className="border-primary/30">
+                    <AccordionTrigger className="font-cinzel text-xl text-primary hover:text-primary/80">
+                      Technical Details
+                    </AccordionTrigger>
+                    <AccordionContent className="font-lato text-foreground/90 space-y-4 pt-4">
+                      <div className="space-y-6">
+                        <div>
+                          <h3 className="font-cinzel text-lg text-primary mb-2">Platform & Methodology</h3>
+                          <p>Built with <strong>Lovable.dev</strong>, an AI-powered platform that enables rapid web development through natural language descriptions. This project showcases the power of <strong>Vibe Coding</strong> - a development approach where you describe what you want rather than writing traditional code line by line.</p>
+                        </div>
+                        
+                        <div>
+                          <h3 className="font-cinzel text-lg text-primary mb-2">Tech Stack</h3>
+                          <ul className="list-disc list-inside space-y-1 ml-4">
+                            <li><strong>React 18</strong> - Modern UI library with hooks and functional components</li>
+                            <li><strong>TypeScript</strong> - Type-safe JavaScript for better development experience</li>
+                            <li><strong>Tailwind CSS</strong> - Utility-first CSS framework for responsive design</li>
+                            <li><strong>Framer Motion</strong> - Smooth animations and transitions</li>
+                            <li><strong>shadcn/ui</strong> - Beautiful, accessible component library</li>
+                            <li><strong>Radix UI</strong> - Unstyled, accessible UI primitives</li>
+                            <li><strong>Vite</strong> - Fast build tool and development server</li>
+                          </ul>
+                        </div>
+                        
+                        <div>
+                          <h3 className="font-cinzel text-lg text-primary mb-2">AI Integration</h3>
+                          <p><strong>Google Gemini AI</strong> powers the tarot interpretations, providing contextual and meaningful readings based on your selected cards and chosen focus area. The AI generates personalized insights rather than generic responses.</p>
+                        </div>
+                        
+                        <div>
+                          <h3 className="font-cinzel text-lg text-primary mb-2">Features</h3>
+                          <ul className="list-disc list-inside space-y-1 ml-4">
+                            <li>Interactive tarot card selection with physics-based animations</li>
+                            <li>Multiple spread options (3, 5, and 7 card layouts)</li>
+                            <li>Category-specific interpretations (Love, Career, Spiritual, General)</li>
+                            <li>AI-generated personalized readings</li>
+                            <li>Fully responsive design for all devices</li>
+                            <li>Mystical UI with custom animations and effects</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
+              >
+                <h2 className="font-cinzel text-2xl text-primary mb-6 text-center">Connect with me</h2>
+                <div className="flex justify-center gap-8">
+                  <a 
+                    href="https://linkedin.com/in/satyam-jat-374481338" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors duration-300 group"
+                  >
+                    <Linkedin className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="font-lato">LinkedIn</span>
+                  </a>
+                  <a 
+                    href="mailto:pcerror009@gmail.com"
+                    className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors duration-300 group"
+                  >
+                    <Mail className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
+                    <span className="font-lato">Email</span>
+                  </a>
+                </div>
+              </motion.div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
   );
 };
