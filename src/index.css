@@ -49,6 +49,7 @@
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.8)), url('/photo-1470071459604-3b5ec3a7fe05') center center/cover no-repeat fixed;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
@@ -56,6 +57,5 @@
   .backface-hidden {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    transform: translateZ(0);
   }
 }
