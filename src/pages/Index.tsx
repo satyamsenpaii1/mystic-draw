@@ -8,7 +8,7 @@ import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/ta
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater, Linkedin, Mail, User, Code, Zap, ArrowRight } from 'lucide-react';
+import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater, Linkedin, Mail, User, Code, Zap } from 'lucide-react';
 
 type SpreadType = 3 | 5 | 7;
 type GameState = 'welcome' | 'spread' | 'category' | 'draw' | 'reading';
@@ -208,15 +208,6 @@ const Index = () => {
               <Button onClick={startGame} size="lg" className="font-cinzel text-lg">
                 Start Reading
               </Button>
-              <button 
-                onClick={() => {
-                  const aboutTab = document.querySelector('[data-value="about"]') as HTMLElement;
-                  aboutTab?.click();
-                }}
-                className="flex items-center gap-2 text-sm text-primary/70 hover:text-primary transition-colors duration-300 font-lato"
-              >
-                Curious how this works? <ArrowRight className="w-4 h-4" />
-              </button>
             </div>
           </motion.div>
         );
@@ -332,7 +323,7 @@ const Index = () => {
       case 'reading':
         return (
           <div className="w-full min-h-full">
-            <div className="flex flex-col items-center w-full p-4 overflow-y-auto pt-8 pb-12">
+            <div className="flex flex-col items-center w-full p-4 pt-8 pb-12">
               <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-2 text-center">Your {category ? readingCategories.find(c => c.name === category)?.label : ''} Reading</h2>
               <p className="font-lato text-foreground/70 mb-6 text-center">Here lies the wisdom you seek.</p>
               
@@ -459,9 +450,9 @@ const Index = () => {
             </TabsTrigger>
           </TabsList>
           
-          <TabsContent value="home" className="flex-1 mt-0 overflow-hidden">
+          <TabsContent value="home" className="flex-1 mt-0 overflow-y-auto">
             <AnimatePresence mode="wait">
-              <div key={gameState} className="w-full h-full flex items-center justify-center">
+              <div key={gameState} className="w-full min-h-full flex items-center justify-center">
                 {renderGameState()}
               </div>
             </AnimatePresence>
