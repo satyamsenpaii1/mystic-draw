@@ -209,7 +209,10 @@ const Index = () => {
                 Start Reading
               </Button>
               <button 
-                onClick={() => document.querySelector('[data-value="about"]')?.click()}
+                onClick={() => {
+                  const aboutTab = document.querySelector('[data-value="about"]') as HTMLElement;
+                  aboutTab?.click();
+                }}
                 className="flex items-center gap-2 text-sm text-primary/70 hover:text-primary transition-colors duration-300 font-lato"
               >
                 Curious how this works? <ArrowRight className="w-4 h-4" />
