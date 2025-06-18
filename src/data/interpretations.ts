@@ -1,4 +1,3 @@
-
 import { CardInterpretations } from '@/types/tarot';
 
 export const interpretations: Record<string, CardInterpretations> = {
@@ -499,6 +498,606 @@ export const interpretations: Record<string, CardInterpretations> = {
         current: "Isolation or stubbornly refusing help when you need it. You may be lost and too proud to ask for directions.",
         future: "Continued confusion if you don't seek guidance or look within. Don't suffer in silence.",
         divine: "There's a difference between solitude and isolation. Seek the wisdom you need to move forward."
+      }
+    }
+  },
+  "Wheel of Fortune": {
+    love: {
+      upright: {
+        current: "Your love life is entering a period of positive change and good fortune. Cycles are turning in your favor.",
+        future: "Destiny is bringing significant romantic opportunities. A fated meeting or relationship turning point awaits.",
+        divine: "Trust in love's perfect timing. The universe is orchestrating beautiful changes in your romantic destiny."
+      },
+      reversed: {
+        current: "Challenging cycles in love or feeling like you're going in circles. External forces may be disrupting your relationships.",
+        future: "Temporary setbacks in love, but remember that all wheels turn. This difficult phase will pass.",
+        divine: "Even in love's difficult seasons, growth is happening. Trust that challenges are teaching you what you need to know."
+      }
+    },
+    career: {
+      upright: {
+        current: "A stroke of professional luck or a turning point in your career. Opportunities are aligning in your favor.",
+        future: "Career advancement through fortunate circumstances. Your professional wheel is turning toward success.",
+        divine: "Destiny favors your career path. Trust in the opportunities the universe is presenting to you."
+      },
+      reversed: {
+        current: "Career setbacks or feeling stuck in professional cycles. External forces beyond your control may be affecting your work.",
+        future: "Temporary career challenges, but persistence will see you through this difficult cycle.",
+        divine: "Career challenges are temporary lessons. Stay adaptable and trust that your professional fortune will improve."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "A significant spiritual breakthrough or awakening is occurring. You're experiencing karmic completion and new beginnings.",
+        future: "Your spiritual journey is reaching a pivotal moment. Higher consciousness and enlightenment are approaching.",
+        divine: "You are experiencing divine timing in your spiritual evolution. Embrace this sacred turning point."
+      },
+      reversed: {
+        current: "Spiritual stagnation or resistance to karmic lessons. You may be fighting against natural spiritual cycles.",
+        future: "Spiritual lessons may feel challenging, but they're necessary for your growth. Embrace the wisdom in difficulty.",
+        divine: "Sometimes we must experience spiritual winter before spiritual spring. Trust in divine timing."
+      }
+    },
+    general: {
+      upright: {
+        current: "Life is taking a positive turn. Good fortune, lucky breaks, and favorable circumstances are surrounding you.",
+        future: "Destiny is working in your favor. Major life changes will bring unexpected opportunities and growth.",
+        divine: "You are experiencing divine timing. Trust that everything is unfolding exactly as it should."
+      },
+      reversed: {
+        current: "Challenging circumstances or feeling like you're at the mercy of external forces. Cycles of difficulty are present.",
+        future: "Temporary setbacks are teaching you important lessons. This challenging cycle will eventually turn.",
+        divine: "Even difficult times serve a purpose. Stay centered and trust that your fortune will improve."
+      }
+    }
+  },
+  "Justice": {
+    love: {
+      upright: {
+        current: "Balance and fairness are essential in your relationship. Truth and honesty are creating harmony between you and your partner.",
+        future: "A relationship decision based on fairness and balance will serve you well. Justice prevails in matters of the heart.",
+        divine: "Love requires both partners to give and receive equally. Seek balance and treat each other with fairness."
+      },
+      reversed: {
+        current: "Imbalance or unfairness in your relationship. Someone may not be taking responsibility for their actions.",
+        future: "Relationship issues require honest communication and taking responsibility. Avoid blame and seek understanding.",
+        divine: "True love cannot exist without honesty and accountability. Face relationship truths with courage."
+      }
+    },
+    career: {
+      upright: {
+        current: "Fairness and integrity in your professional life are bringing positive results. Legal matters may be resolved favorably.",
+        future: "Professional recognition for your honest work and ethical behavior. Justice and fairness will advance your career.",
+        divine: "Integrity in your work creates lasting success. Continue to act with honesty and fairness."
+      },
+      reversed: {
+        current: "Workplace injustice or ethical compromises may be affecting your career. Someone may not be playing fair.",
+        future: "Professional challenges requiring you to stand up for what's right. Don't compromise your integrity for advancement.",
+        divine: "Your integrity is more valuable than any position. Stand firm in your principles even when it's difficult."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Spiritual balance and karmic justice are manifesting in your life. You're learning important lessons about cause and effect.",
+        future: "Spiritual accountability and taking responsibility for your actions will accelerate your growth.",
+        divine: "The universe operates on perfect justice. Your actions and intentions create your spiritual reality."
+      },
+      reversed: {
+        current: "Spiritual imbalance or avoiding responsibility for your spiritual growth. You may be judging yourself or others too harshly.",
+        future: "Spiritual progress requires honest self-examination and forgiveness. Release judgment and embrace compassion.",
+        divine: "Divine justice includes divine mercy. Be as compassionate with yourself as you are seeking truth."
+      }
+    },
+    general: {
+      upright: {
+        current: "Truth, fairness, and balance are guiding your decisions. Justice is being served in your current situation.",
+        future: "Fair outcomes and balanced decisions will shape your future. Truth will prevail in all your endeavors.",
+        divine: "The universe supports truth and justice. Continue to act with integrity and fairness."
+      },
+      reversed: {
+        current: "Injustice or imbalance is affecting your life. You may need to take responsibility for your part in current difficulties.",
+        future: "Challenging lessons about accountability and fairness are coming. Face truth with courage and make necessary changes.",
+        divine: "True justice sometimes requires difficult honesty. Embrace truth even when it's uncomfortable."
+      }
+    }
+  },
+  "The Hanged Man": {
+    love: {
+      upright: {
+        current: "A period of waiting and surrendering in love. You're learning to see your relationship from a new perspective.",
+        future: "Patience in love will be rewarded. A sacrifice or period of waiting will lead to deeper understanding.",
+        divine: "Sometimes love requires letting go of control. Trust the process and allow love to unfold naturally."
+      },
+      reversed: {
+        current: "Resistance to necessary relationship changes or unwillingness to see things from your partner's perspective.",
+        future: "Stubbornness in love may prevent growth. Be willing to compromise and see situations differently.",
+        divine: "Love grows through flexibility and understanding. Release rigid expectations and embrace compassion."
+      }
+    },
+    career: {
+      upright: {
+        current: "A pause in your career progress that's serving a higher purpose. This waiting period is preparing you for what's next.",
+        future: "Career advancement through patience and seeing opportunities from a new angle. Temporary sacrifice leads to long-term gain.",
+        divine: "Professional growth sometimes requires stepping back to see the bigger picture. Trust in divine timing."
+      },
+      reversed: {
+        current: "Resistance to necessary career changes or feeling stuck due to your own unwillingness to adapt.",
+        future: "Career progress requires releasing old patterns and embracing new perspectives. Stop fighting the flow.",
+        divine: "Your career evolution requires surrendering outdated beliefs about success. Embrace new possibilities."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "A profound spiritual awakening through surrender and letting go. You're learning to trust the divine plan.",
+        future: "Spiritual enlightenment through releasing control and embracing divine will. Surrender leads to liberation.",
+        divine: "The highest spiritual teaching is surrender. Let go and let the divine guide your path."
+      },
+      reversed: {
+        current: "Spiritual resistance or unwillingness to surrender to higher wisdom. You may be fighting against your spiritual growth.",
+        future: "Spiritual progress requires releasing ego control and embracing humility. Stop resisting your evolution.",
+        divine: "Your spiritual journey requires surrendering the illusion of control. Trust in divine wisdom."
+      }
+    },
+    general: {
+      upright: {
+        current: "A period of suspension and waiting that serves a higher purpose. You're gaining new perspective through this pause.",
+        future: "Wisdom and enlightenment through surrender and seeing life from a different angle. Patience will be rewarded.",
+        divine: "Sometimes life requires us to pause and reflect. Trust that this waiting period serves your highest good."
+      },
+      reversed: {
+        current: "Resistance to necessary changes or unwillingness to see situations from a new perspective.",
+        future: "Progress requires releasing old patterns and embracing new viewpoints. Stop fighting against necessary changes.",
+        divine: "Growth requires flexibility and willingness to change. Embrace new perspectives with an open heart."
+      }
+    }
+  },
+  "Death": {
+    love: {
+      upright: {
+        current: "A significant transformation in your love life. One phase of your romantic journey is ending to make way for something new.",
+        future: "Rebirth in love after a period of ending. A deeper, more authentic relationship is emerging from the ashes of the old.",
+        divine: "Love's greatest transformations come through endings. Trust that what's leaving is making space for something better."
+      },
+      reversed: {
+        current: "Resistance to necessary changes in your relationship. Clinging to what's not working is preventing growth.",
+        future: "Love transformation is being delayed by fear or resistance. Embrace the changes that need to happen.",
+        divine: "Fighting against love's natural evolution creates suffering. Allow relationships to transform naturally."
+      }
+    },
+    career: {
+      upright: {
+        current: "A major career transformation is occurring. The end of one professional phase is leading to a powerful new beginning.",
+        future: "Professional rebirth through embracing necessary endings. A more fulfilling career path is emerging.",
+        divine: "Career death and rebirth lead to authentic success. Trust the professional transformation you're experiencing."
+      },
+      reversed: {
+        current: "Resistance to necessary career changes or fear of professional transformation. Clinging to outdated work patterns.",
+        future: "Career growth requires embracing change and releasing what no longer serves. Stop fighting necessary transitions.",
+        divine: "Your professional evolution requires releasing old identities. Embrace the career transformation calling you."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Profound spiritual transformation and ego death. You're experiencing a rebirth of consciousness and awareness.",
+        future: "Spiritual awakening through releasing old beliefs and identities. A new spiritual self is being born.",
+        divine: "Spiritual death and rebirth are part of enlightenment. Trust the transformation of your consciousness."
+      },
+      reversed: {
+        current: "Resistance to spiritual transformation or clinging to outdated beliefs. Fear is preventing spiritual growth.",
+        future: "Spiritual evolution requires releasing old patterns and embracing new understanding. Stop resisting growth.",
+        divine: "Your spiritual rebirth requires releasing who you think you are. Embrace the unknown spiritual self emerging."
+      }
+    },
+    general: {
+      upright: {
+        current: "Major life transformation and the end of a significant life phase. Profound change is clearing the way for renewal.",
+        future: "Rebirth and renewal after a period of endings. A more authentic version of yourself is emerging.",
+        divine: "Life's greatest transformations come through endings. Trust that what's dying is making space for your highest self."
+      },
+      reversed: {
+        current: "Resistance to necessary life changes or fear of transformation. Clinging to the familiar is preventing growth.",
+        future: "Life transformation requires courage to let go of what no longer serves. Embrace necessary endings.",
+        divine: "Fighting against life's natural cycles creates suffering. Allow transformation to happen with grace."
+      }
+    }
+  },
+  "Temperance": {
+    love: {
+      upright: {
+        current: "Perfect balance and harmony in your relationship. You and your partner are blending beautifully, creating something greater together.",
+        future: "Healing and patience in love will create a harmonious union. Gradual, mindful love development is favored.",
+        divine: "Love is the art of balance. Continue to blend your energies with patience and mutual respect."
+      },
+      reversed: {
+        current: "Imbalance or extremes in your relationship. Lack of patience or poor communication is creating disharmony.",
+        future: "Relationship healing requires more patience and balance. Avoid extremes and seek the middle path in love.",
+        divine: "Love requires temperance and patience. Avoid rushing or forcing romantic outcomes."
+      }
+    },
+    career: {
+      upright: {
+        current: "Perfect balance between your skills and opportunities. You're blending different aspects of your work harmoniously.",
+        future: "Career success through patience, balance, and gradual progress. Collaboration and moderation lead to achievement.",
+        divine: "Professional success comes through balanced effort and patient persistence. Continue your measured approach."
+      },
+      reversed: {
+        current: "Imbalance in your work life or extremes in your professional approach. Lack of patience is hindering progress.",
+        future: "Career advancement requires more balance and patience. Avoid rushing or taking extreme measures.",
+        divine: "Professional growth requires temperance. Balance ambition with patience and collaboration with independence."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Perfect spiritual balance and integration. You're harmoniously blending different aspects of your spiritual practice.",
+        future: "Spiritual healing and growth through patience and balance. Gradual spiritual development is bringing enlightenment.",
+        divine: "Spiritual mastery comes through balance and temperance. Continue your patient, measured spiritual practice."
+      },
+      reversed: {
+        current: "Spiritual imbalance or extremes in your practice. Lack of patience or integration is hindering growth.",
+        future: "Spiritual progress requires more balance and patience. Avoid spiritual extremes and embrace moderation.",
+        divine: "Spiritual growth is a gradual process requiring patience. Balance different aspects of your practice harmoniously."
+      }
+    },
+    general: {
+      upright: {
+        current: "Perfect balance and moderation in all areas of life. You're successfully blending different aspects of your experience.",
+        future: "Continued success through patience, balance, and gradual progress. Harmony and healing are manifesting.",
+        divine: "Life's greatest achievements come through balance and temperance. Continue your patient, measured approach to growth."
+      },
+      reversed: {
+        current: "Imbalance or extremes in your approach to life. Lack of patience or poor integration is creating challenges.",
+        future: "Life improvement requires more balance and patience. Avoid extremes and seek harmony in all areas.",
+        divine: "Life mastery requires temperance and balance. Embrace patience and moderation in all your endeavors."
+      }
+    }
+  },
+  "The Devil": {
+    love: {
+      upright: {
+        current: "Passion and intensity in your relationship, but also potential for unhealthy attachments or codependency.",
+        future: "Recognition of relationship patterns that may be binding you. Liberation comes through acknowledging what's not serving you.",
+        divine: "True love liberates; false love binds. Examine what in your relationship serves growth versus what creates dependency."
+      },
+      reversed: {
+        current: "Breaking free from unhealthy relationship patterns or toxic attachments. You're recognizing your own power to choose.",
+        future: "Liberation from love's shadows and unhealthy patterns. Freedom and authentic love are possible.",
+        divine: "You have the power to break free from any love that diminishes you. Choose relationships that honor your highest self."
+      }
+    },
+    career: {
+      upright: {
+        current: "Feeling trapped in your career or bound by unhealthy work patterns. Material success may be coming at a spiritual cost.",
+        future: "Recognition of professional limitations you've created. The first step to career freedom is acknowledging your chains.",
+        divine: "Examine what professional success costs your soul. True career fulfillment honors both ambition and integrity."
+      },
+      reversed: {
+        current: "Breaking free from limiting career beliefs or toxic work environments. You're reclaiming your professional power.",
+        future: "Career liberation through recognizing and releasing self-imposed limitations. Professional freedom is within reach.",
+        divine: "You have the power to create fulfilling work. Release any beliefs that keep you trapped in unfulfilling careers."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Confronting your shadow self and acknowledging the parts of yourself you've been denying or suppressing.",
+        future: "Spiritual growth through facing your darker aspects. Integration of shadow leads to wholeness.",
+        divine: "Spiritual evolution requires embracing all aspects of yourself. Your shadow contains power when consciously integrated."
+      },
+      reversed: {
+        current: "Breaking free from spiritual illusions or toxic spiritual practices. You're reclaiming your authentic spiritual power.",
+        future: "Spiritual liberation through releasing limiting beliefs and embracing your true spiritual nature.",
+        divine: "You are already free. Release any spiritual beliefs that make you feel powerless or unworthy."
+      }
+    },
+    general: {
+      upright: {
+        current: "Feeling bound by circumstances, addictions, or limiting beliefs. Recognition of your own participation in creating these chains.",
+        future: "Liberation comes through acknowledging what binds you. The power to change lies in recognizing your choices.",
+        divine: "You are more powerful than any circumstance. Your chains are often self-created and can be self-released."
+      },
+      reversed: {
+        current: "Breaking free from limiting beliefs, addictions, or toxic patterns. You're reclaiming your personal power.",
+        future: "Liberation and freedom through conscious choice and releasing what no longer serves you.",
+        divine: "Freedom is your birthright. You have the power to release yourself from any limitation or negative pattern."
+      }
+    }
+  },
+  "The Tower": {
+    love: {
+      upright: {
+        current: "Sudden upheaval or revelation in your relationship. What seemed stable is being shaken to reveal the truth underneath.",
+        future: "Relationship foundations built on shaky ground will crumble, but this clearing makes space for authentic love.",
+        divine: "Sometimes love's greatest gift is the destruction of what's false. Trust that what falls away was never truly yours."
+      },
+      reversed: {
+        current: "Avoiding necessary relationship upheaval or clinging to a connection that needs to end. Resistance to obvious truth.",
+        future: "Delayed but inevitable relationship changes. The tower will fall when you're ready to face the truth.",
+        divine: "Fighting against necessary endings prolongs suffering. Allow love's natural destruction and renewal cycles."
+      }
+    },
+    career: {
+      upright: {
+        current: "Sudden career disruption or professional revelation. Structures you thought were solid are being shaken or destroyed.",
+        future: "Career upheaval that ultimately serves your highest good. What's destroyed makes space for authentic success.",
+        divine: "Professional destruction often precedes professional rebirth. Trust that what's crumbling wasn't built on solid ground."
+      },
+      reversed: {
+        current: "Avoiding necessary career changes or clinging to professional situations that need to end.",
+        future: "Delayed but inevitable career upheaval. The professional tower will eventually fall for your own good.",
+        divine: "Resisting necessary professional changes prolongs career stagnation. Embrace the transformation calling you."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Sudden spiritual awakening or destruction of false spiritual beliefs. Your spiritual foundations are being shaken.",
+        future: "Spiritual breakthrough through the destruction of illusion. What's real will remain; what's false will crumble.",
+        divine: "Spiritual awakening often comes through the destruction of false beliefs. Trust the process of spiritual rebuilding."
+      },
+      reversed: {
+        current: "Avoiding necessary spiritual awakening or clinging to spiritual beliefs that no longer serve you.",
+        future: "Delayed spiritual breakthrough. Eventually, false spiritual foundations will crumble for your highest good.",
+        divine: "Spiritual evolution requires releasing outdated beliefs. Don't fear the destruction of what no longer serves your growth."
+      }
+    },
+    general: {
+      upright: {
+        current: "Sudden upheaval or destruction of false foundations in your life. What seemed permanent is being shaken to its core.",
+        future: "Liberation through destruction of what was built on shaky ground. Authentic rebuilding follows the collapse.",
+        divine: "Life's greatest revelations come through destruction of illusion. Trust that what's crumbling was never truly stable."
+      },
+      reversed: {
+        current: "Avoiding necessary life changes or clinging to structures that need to fall. Resistance to obvious truth.",
+        future: "Delayed but inevitable life upheaval. The tower will fall when you're ready to face what needs to change.",
+        divine: "Fighting against necessary life changes prolongs suffering. Allow destruction to clear space for authentic rebuilding."
+      }
+    }
+  },
+  "The Star": {
+    love: {
+      upright: {
+        current: "Hope and healing in your love life. You're feeling optimistic about romantic possibilities and trusting in love's guidance.",
+        future: "A wish fulfilled in love or the arrival of a soulmate connection. Your heart's desires are being heard by the universe.",
+        divine: "Love is your guiding star. Trust in your heart's wisdom and let hope illuminate your romantic path."
+      },
+      reversed: {
+        current: "Loss of hope in love or feeling disconnected from your romantic dreams. Self-doubt is clouding your heart's vision.",
+        future: "Reconnection with hope and healing in love. Your romantic star will shine again when you rediscover self-love.",
+        divine: "Your capacity for love is infinite. Reconnect with the hope and healing power within your own heart."
+      }
+    },
+    career: {
+      upright: {
+        current: "Professional inspiration and clear vision for your career path. Your talents are being recognized and appreciated.",
+        future: "Career wishes coming true through following your genuine inspiration. Your professional star is rising.",
+        divine: "Follow your professional inspiration. Your unique gifts are needed in the world; trust your career vision."
+      },
+      reversed: {
+        current: "Loss of professional direction or feeling uninspired in your career. Self-doubt is dimming your career vision.",
+        future: "Rediscovering career inspiration and professional hope. Your talents will shine when you reconnect with your purpose.",
+        divine: "Your professional gifts are valuable. Reconnect with what originally inspired you and trust your unique contribution."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Spiritual guidance and connection to higher wisdom. You're receiving clear signs and feeling divinely supported.",
+        future: "Spiritual wishes and prayers being answered. Your connection to divine guidance is strengthening.",
+        divine: "You are a star in the cosmic constellation. Trust your spiritual intuition and let divine guidance illuminate your path."
+      },
+      reversed: {
+        current: "Spiritual disconnection or loss of faith. You may be feeling unworthy of divine guidance or questioning your spiritual path.",
+        future: "Reconnection with spiritual hope and divine guidance. Your spiritual light will shine again through self-compassion.",
+        divine: "You are always connected to divine love. Forgive yourself and allow spiritual healing to restore your inner light."
+      }
+    },
+    general: {
+      upright: {
+        current: "Hope, inspiration, and divine guidance are illuminating your path. You're feeling optimistic about the future.",
+        future: "Wishes being fulfilled and dreams coming true. Your highest aspirations are being supported by the universe.",
+        divine: "You are guided by infinite love and wisdom. Trust your dreams and let hope be your compass."
+      },
+      reversed: {
+        current: "Loss of hope or feeling disconnected from your dreams. Self-doubt and pessimism are clouding your vision.",
+        future: "Rediscovering hope and reconnecting with your dreams. Your inner light will shine again through healing.",
+        divine: "Your dreams are valid and your hopes are sacred. Heal your relationship with yourself to restore your inner star."
+      }
+    }
+  },
+  "Ace of Wands": {
+    love: {
+      upright: {
+        current: "A spark of new romantic passion is igniting. Fresh creative energy is entering your love life with exciting potential.",
+        future: "The beginning of a passionate new romance or renewed fire in your existing relationship.",
+        divine: "Love's creative force is awakening within you. Allow this passionate energy to flow naturally."
+      },
+      reversed: {
+        current: "Blocked creative energy in love or false starts in romance. Passion may be misdirected or lacking focus.",
+        future: "Delayed romantic beginnings. Your passionate energy needs better direction to manifest love successfully.",
+        divine: "Your heart's fire needs proper kindling. Focus your loving energy with clear intention."
+      }
+    },
+    career: {
+      upright: {
+        current: "A brilliant new career idea or opportunity is presenting itself. Creative energy and inspiration are flowing strongly.",
+        future: "The launch of a successful new project or career venture. Your innovative ideas will bear fruit.",
+        divine: "Your creative genius is ready to manifest in the world. Trust your professional inspiration."
+      },
+      reversed: {
+        current: "Creative blocks at work or difficulty launching new projects. Your professional energy lacks focus or direction.",
+        future: "Professional delays until you clarify your vision. Raw talent needs refinement and focus.",
+        divine: "Channel your creative energy with intention. Scattered inspiration needs focused direction to succeed."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "A new spiritual awakening or burst of divine inspiration. Your inner fire and passion for truth are igniting.",
+        future: "The beginning of an important spiritual journey or practice. Divine creativity is flowing through you.",
+        divine: "Your spiritual spark is divine fire. Tend this sacred flame with devotion and watch it grow."
+      },
+      reversed: {
+        current: "Spiritual energy feeling blocked or misdirected. Your connection to divine inspiration may be clouded.",
+        future: "Spiritual breakthrough requires clearing energetic blocks. Your divine spark needs proper nurturing.",
+        divine: "Remove what dims your spiritual fire. Your connection to the divine is always available when you clear the channel."
+      }
+    },
+    general: {
+      upright: {
+        current: "A powerful new beginning filled with creative potential. Raw energy and inspiration are ready to be channeled.",
+        future: "Successful manifestation of your creative ideas. This spark of inspiration will grow into something significant.",
+        divine: "You hold the seed of creation in your hands. Plant it with intention and watch it flourish."
+      },
+      reversed: {
+        current: "Creative energy lacking direction or false starts in new ventures. Potential exists but needs better focus.",
+        future: "Success requires channeling your raw energy more effectively. Clarify your vision before moving forward.",
+        divine: "Your creative power is infinite but needs conscious direction. Focus your energy with clear intention."
+      }
+    }
+  },
+  "Three of Cups": {
+    love: {
+      upright: {
+        current: "Celebration and joy in love, possibly including friends and community. Your relationship is supported by those around you.",
+        future: "A love celebration - engagement, wedding, or relationship milestone. Community support strengthens your bond.",
+        divine: "Love is meant to be celebrated and shared. Your happiness in love brings joy to others as well."
+      },
+      reversed: {
+        current: "Drama in your social circle affecting your love life or feeling excluded from romantic celebrations.",
+        future: "Relationship challenges involving friends or family. You may need to protect your love from outside interference.",
+        divine: "Not everyone will celebrate your love, and that's okay. Focus on those who genuinely support your happiness."
+      }
+    },
+    career: {
+      upright: {
+        current: "Successful collaboration and team achievements at work. Your professional relationships are thriving.",
+        future: "Career advancement through networking and collaboration. Celebrate professional achievements with colleagues.",
+        divine: "Success is sweeter when shared. Your professional friendships are valuable assets to your career."
+      },
+      reversed: {
+        current: "Office politics or team conflicts affecting your work environment. Lack of support from colleagues.",
+        future: "Professional isolation or competitive workplace dynamics. Focus on individual achievements.",
+        divine: "Not every workplace will appreciate your contributions. Find where your talents are truly valued."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Spiritual community and shared celebration of faith or beliefs. You're finding like-minded spiritual companions.",
+        future: "Spiritual growth through community involvement and shared practices. Collective worship or study brings joy.",
+        divine: "Spiritual joy multiplies when shared with others. Your spiritual community supports your growth."
+      },
+      reversed: {
+        current: "Spiritual isolation or conflicts within your spiritual community. Feeling excluded from group practices.",
+        future: "Need to find a spiritual community that truly accepts you. Some groups may not be right for your path.",
+        divine: "Your spiritual path is unique, even within community. Honor your individual connection to the divine."
+      }
+    },
+    general: {
+      upright: {
+        current: "Friendship, celebration, and community support. You're enjoying the company of like-minded people.",
+        future: "Social success and meaningful friendships. Celebrations and gatherings will bring joy to your life.",
+        divine: "Life's joys are meant to be shared. Your happiness contributes to the collective joy of those around you."
+      },
+      reversed: {
+        current: "Social drama, feeling excluded, or superficial friendships. Your social circle may need evaluation.",
+        future: "Social challenges requiring you to choose quality over quantity in relationships.",
+        divine: "True friendship is rare and precious. Choose companions who celebrate your authentic self."
+      }
+    }
+  },
+  "Seven of Swords": {
+    love: {
+      upright: {
+        current: "Deception or secretive behavior in your relationship. Someone may not be completely honest about their feelings or actions.",
+        future: "The need for careful observation in love. Trust your instincts if something feels dishonest.",
+        divine: "Love requires honesty to flourish. Address any deception before it undermines your relationship's foundation."
+      },
+      reversed: {
+        current: "Coming clean about past deceptions or choosing honesty over convenience in your relationship.",
+        future: "Truth emerging in love, leading to either deeper trust or necessary endings. Honesty will prevail.",
+        divine: "The truth in love, though sometimes painful, always serves your highest good. Choose transparency."
+      }
+    },
+    career: {
+      upright: {
+        current: "Workplace dishonesty, theft of ideas, or deceptive practices. Someone may be taking credit for your work.",
+        future: "Need for vigilance in professional matters. Protect your ideas and document your contributions.",
+        divine: "Professional integrity is your greatest asset. Don't compromise your values for short-term gains."
+      },
+      reversed: {
+        current: "Confessing to professional mistakes or choosing ethical behavior over personal advancement.",
+        future: "Professional honesty leading to respect and trust from colleagues. Integrity pays long-term dividends.",
+        divine: "Your professional reputation is built on consistent integrity. Choose the honest path even when it's difficult."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Self-deception or avoiding spiritual truths that need to be faced. You may be stealing peace from yourself through denial.",
+        future: "The need to examine your spiritual honesty. Are you living in alignment with your stated beliefs?",
+        divine: "Spiritual growth requires radical honesty with yourself. Face the truths you've been avoiding."
+      },
+      reversed: {
+        current: "Spiritual honesty and facing uncomfortable truths about yourself. Choosing authentic spiritual growth over comfortable illusions.",
+        future: "Spiritual breakthrough through radical self-honesty. Truth, though challenging, leads to liberation.",
+        divine: "Your spiritual evolution depends on your willingness to see yourself clearly. Embrace truth with courage."
+      }
+    },
+    general: {
+      upright: {
+        current: "Deception, theft, or dishonest behavior affecting your life. You may need to be more vigilant about protecting yourself.",
+        future: "The need for careful observation and protection of your interests. Not everyone has honorable intentions.",
+        divine: "Wisdom includes recognizing when others are not acting in your best interest. Protect yourself appropriately."
+      },
+      reversed: {
+        current: "Choosing honesty over convenience or confessing to past mistakes. Taking responsibility for your actions.",
+        future: "Truth emerging and honest behavior being rewarded. Integrity leads to lasting success and peace.",
+        divine: "Honesty is the foundation of authentic living. Choose truth even when it requires courage."
+      }
+    }
+  },
+  "Ten of Pentacles": {
+    love: {
+      upright: {
+        current: "Long-term security and stability in your relationship. You're building something lasting and meaningful together.",
+        future: "Marriage, family creation, or achieving major relationship milestones. Legacy love that spans generations.",
+        divine: "True love creates lasting foundations. Your relationship is building something greater than yourselves."
+      },
+      reversed: {
+        current: "Instability in long-term relationship plans or family conflicts affecting your love life.",
+        future: "Challenges to relationship security requiring attention to foundations. Invest in what truly lasts.",
+        divine: "Love's true wealth isn't material but spiritual. Focus on building unshakeable emotional and spiritual bonds."
+      }
+    },
+    career: {
+      upright: {
+        current: "Career security, wealth accumulation, and professional legacy building. Your work is creating lasting value.",
+        future: "Financial independence and professional establishment. Your career efforts will benefit future generations.",
+        divine: "True professional success creates value beyond yourself. Build work that contributes to lasting positive change."
+      },
+      reversed: {
+        current: "Financial instability, career insecurity, or conflicts over money and inheritance.",
+        future: "Need to reassess what constitutes true professional wealth. Some forms of success don't last.",
+        divine: "Your greatest professional legacy is the positive impact you have on others. Measure success by contribution, not just accumulation."
+      }
+    },
+    spiritual: {
+      upright: {
+        current: "Spiritual abundance and connection to ancestral wisdom. Your spiritual practice is creating lasting value.",
+        future: "Spiritual legacy and wisdom that will benefit future generations. Your spiritual growth serves others.",
+        divine: "Your spiritual wealth is infinite and eternal. What you gain spiritually can never be lost."
+      },
+      reversed: {
+        current: "Spiritual poverty despite material wealth, or disconnection from spiritual traditions and wisdom.",
+        future: "Need to reconnect with spiritual values and traditions. Material success without spiritual grounding is empty.",
+        divine: "True wealth includes spiritual abundance. Don't sacrifice spiritual riches for material gain."
+      }
+    },
+    general: {
+      upright: {
+        current: "Security, stability, and accumulation of lasting wealth in all forms. You're building something enduring.",
+        future: "Legacy creation and long-term security. Your efforts will benefit not just you but future generations.",
+        divine: "True abundance encompasses all areas of life. Build wealth that enriches your soul as well as your material life."
+      },
+      reversed: {
+        current: "Instability, poor investments, or family conflicts over resources and inheritance.",
+        future: "Need to reassess what constitutes true wealth and security. Some foundations may need rebuilding.",
+        divine: "The most valuable inheritance you can leave is wisdom, love, and positive impact. Invest in what truly matters."
       }
     }
   }

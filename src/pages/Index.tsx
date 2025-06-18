@@ -102,7 +102,8 @@ const Index = () => {
     setGameState('welcome');
   };
 
-  const getInterpretation = (card: TarotCardData): InterpretationDetail | { meaning: string } => {
+  // Enhanced interpretation function that selects the best fitting interpretation
+  const getInterpretation = (card: TarotCardData, position: string): InterpretationDetail | { meaning: string } => {
     if (!category) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
     
     const cardInterpretation = interpretations[card.name];
@@ -111,7 +112,23 @@ const Index = () => {
     const categoryInterpretation = cardInterpretation[category];
     if (!categoryInterpretation) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
     
-    return card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
+    const interpretation = card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
+    
+    // Instead of returning the full interpretation, select the most relevant aspect
+    const posLower = position.toLowerCase();
+    let selectedMeaning = "";
+    
+    if (posLower.includes('past') || posLower.includes('history') || posLower.includes('foundation')) {
+      selectedMeaning = interpretation.current;
+    } else if (posLower.includes('future') || posLower.includes('outcome') || posLower.includes('ahead') || posLower.includes('coming')) {
+      selectedMeaning = interpretation.future;
+    } else if (posLower.includes('advice') || posLower.includes('guidance') || posLower.includes('divine')) {
+      selectedMeaning = interpretation.divine;
+    } else {
+      selectedMeaning = interpretation.current;
+    }
+    
+    return { meaning: selectedMeaning };
   };
 
   const generateAIReading = useCallback(() => {
@@ -143,7 +160,7 @@ const Index = () => {
           reversedCount
         };
 
-        // Generate dynamic summary and reading
+        // Generate enhanced dynamic summary and reading
         const summary = generateDynamicSummary(readingContext);
         const reading = generateContextualReading(readingContext);
 
@@ -301,7 +318,7 @@ const Index = () => {
               
               <div className="flex flex-wrap justify-center items-start gap-6 md:gap-8 mb-8">
                 {selectedCards.map((card, index) => {
-                  const interpretation = getInterpretation(card);
+                  const interpretation = getInterpretation(card, readingPositions[index]);
                   return (
                   <motion.div 
                     key={index}
@@ -326,17 +343,9 @@ const Index = () => {
                           className="text-center max-w-xs bg-black/20 p-4 rounded-lg w-full"
                        >
                          <h3 className="font-cinzel text-xl text-primary">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
-                         {'meaning' in interpretation ? (
-                            <p className="font-lato text-sm text-foreground/80 mt-2">
-                               {interpretation.meaning}
-                            </p>
-                         ) : (
-                           <div className="font-lato text-sm text-left text-foreground/80 mt-2 space-y-3">
-                             <p><strong>Current:</strong> {interpretation.current}</p>
-                             <p><strong>Future:</strong> {interpretation.future}</p>
-                             <p><strong>Divine:</strong> {interpretation.divine}</p>
-                           </div>
-                         )}
+                         <p className="font-lato text-sm text-foreground/80 mt-2">
+                           {interpretation.meaning}
+                         </p>
                          <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3">
                           <strong>In Context:</strong> {card.desc}
                          </p>
