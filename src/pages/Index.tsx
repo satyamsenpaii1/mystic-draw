@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import TarotCard from '@/components/TarotCard';
 import { tarotDeckData } from '@/data/tarot-deck';
-import { TarotCardData, ReadingCategory, InterpretationDetail } from '@/types/tarot';
+import { TarotCardData, ReadingCategory } from '@/types/tarot';
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -102,19 +102,19 @@ const Index = () => {
     setGameState('welcome');
   };
 
-  // Enhanced interpretation function that selects the best fitting interpretation
-  const getInterpretation = (card: TarotCardData, position: string): InterpretationDetail | { meaning: string } => {
-    if (!category) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+  // Enhanced interpretation function that returns a meaning string
+  const getInterpretation = (card: TarotCardData, position: string): string => {
+    if (!category) return card.reversed ? card.meaning_rev : card.meaning_up;
     
     const cardInterpretation = interpretations[card.name];
-    if (!cardInterpretation) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+    if (!cardInterpretation) return card.reversed ? card.meaning_rev : card.meaning_up;
     
     const categoryInterpretation = cardInterpretation[category];
-    if (!categoryInterpretation) return { meaning: card.reversed ? card.meaning_rev : card.meaning_up };
+    if (!categoryInterpretation) return card.reversed ? card.meaning_rev : card.meaning_up;
     
     const interpretation = card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
     
-    // Instead of returning the full interpretation, select the most relevant aspect
+    // Select the most relevant aspect based on position
     const posLower = position.toLowerCase();
     let selectedMeaning = "";
     
@@ -128,7 +128,7 @@ const Index = () => {
       selectedMeaning = interpretation.current;
     }
     
-    return { meaning: selectedMeaning };
+    return selectedMeaning;
   };
 
   const generateAIReading = useCallback(() => {
@@ -318,7 +318,7 @@ const Index = () => {
               
               <div className="flex flex-wrap justify-center items-start gap-6 md:gap-8 mb-8">
                 {selectedCards.map((card, index) => {
-                  const interpretation = getInterpretation(card, readingPositions[index]);
+                  const interpretationText = getInterpretation(card, readingPositions[index]);
                   return (
                   <motion.div 
                     key={index}
@@ -344,7 +344,7 @@ const Index = () => {
                        >
                          <h3 className="font-cinzel text-xl text-primary">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
                          <p className="font-lato text-sm text-foreground/80 mt-2">
-                           {interpretation.meaning}
+                           {interpretationText}
                          </p>
                          <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3">
                           <strong>In Context:</strong> {card.desc}
