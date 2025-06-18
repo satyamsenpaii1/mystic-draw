@@ -9,6 +9,7 @@ import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater, Linkedin, Mail, User, Code, Zap } from 'lucide-react';
+import { generateDynamicSummary, generateContextualReading } from '@/utils/readingGenerator';
 
 type SpreadType = 3 | 5 | 7;
 type GameState = 'welcome' | 'spread' | 'category' | 'draw' | 'reading';
@@ -118,8 +119,10 @@ const Index = () => {
     setIsGenerating(true);
 
     setTimeout(() => {
-        const majorArcana = tarotDeckData.slice(0, 22).map(c => c.name);
-        const majorArcanaCount = selectedCards.filter(c => majorArcana.includes(c.name)).length;
+        const majorArcanaCount = selectedCards.filter(card => {
+          const majorArcana = ['The Fool', 'The Magician', 'The High Priestess', 'The Empress', 'The Emperor', 'The Hierophant', 'The Lovers', 'The Chariot', 'Strength', 'The Hermit', 'Wheel of Fortune', 'Justice', 'The Hanged Man', 'Death', 'Temperance', 'The Devil', 'The Tower', 'The Star', 'The Moon', 'The Sun', 'Judgement', 'The World'];
+          return majorArcana.includes(card.name);
+        }).length;
         
         const suits: { [key: string]: number } = { Wands: 0, Cups: 0, Swords: 0, Pentacles: 0 };
         selectedCards.forEach(card => {
@@ -129,57 +132,26 @@ const Index = () => {
             else if (card.name.includes('Pentacles')) suits.Pentacles++;
         });
 
-        let summary = "The cards offer a multifaceted perspective on your situation. ";
-        if (majorArcanaCount / selectedCards.length >= 0.5) {
-            summary += "Significant life lessons and major themes are at play, as indicated by the presence of several Major Arcana cards. ";
-        }
+        const reversedCount = selectedCards.filter(card => card.reversed).length;
 
-        const dominantSuit = Object.keys(suits).reduce((a, b) => suits[a] > suits[b] ? a : b);
-        if (suits[dominantSuit] > 0) {
-            const suitThemes: { [key: string]: string } = {
-                Wands: 'energy, passion, and creativity',
-                Cups: 'emotions, relationships, and intuition',
-                Swords: 'thoughts, challenges, and communication',
-                Pentacles: 'material aspects, career, and finances'
-            };
-            summary += `There is a strong focus on ${suitThemes[dominantSuit]}.`;
-        } else {
-            summary += "Pay close attention to the interplay of forces in your life."
-        }
+        const readingContext = {
+          cards: selectedCards,
+          category,
+          positions: readingPositions,
+          majorArcanaCount,
+          suitDistribution: suits,
+          reversedCount
+        };
+
+        // Generate dynamic summary and reading
+        const summary = generateDynamicSummary(readingContext);
+        const reading = generateContextualReading(readingContext);
+
         setAiSummary(summary);
-
-        let reading = "";
-        selectedCards.forEach((card, index) => {
-            const position = readingPositions[index];
-            const interpretation = getInterpretation(card);
-            const cardName = `${card.name} ${card.reversed ? '(Reversed)' : ''}`;
-            
-            let meaning;
-            if ('meaning' in interpretation) {
-                meaning = interpretation.meaning;
-            } else {
-                meaning = `for your current situation, it speaks of '${interpretation.current}'. Looking to the future, it advises on '${interpretation.future}'. The divine message is to understand '${interpretation.divine}'.`;
-            }
-
-            const narrativeIntro = [
-                `Your reading begins with the ${position}, represented by the ${cardName}. This card suggests that`,
-                `Following this, the ${cardName} appears in the ${position} position, highlighting that`,
-                `Next, the cards reveal the ${cardName} for your ${position}, indicating that`,
-                `Moving on, the ${cardName} in the ${position} position sheds light on the fact that`,
-                `Then, we see the ${cardName} in the ${position} position, which implies that`,
-                `As we near the conclusion, the ${cardName} stands for the ${position}, suggesting`,
-                `Finally, in the ${position} position, the ${cardName} points towards a potential outcome. It indicates that`
-            ];
-
-            reading += `${narrativeIntro[index] || `For the ${position}, the ${cardName} suggests that`} ${meaning}\n\n`;
-        });
-        
-        reading += `This reading encourages you to reflect on these interconnected messages as you move forward.`;
-
         setAiReading(reading);
         setIsGenerating(false);
     }, 1500);
-  }, [selectedCards, category, readingPositions, isGenerating, getInterpretation]);
+  }, [selectedCards, category, readingPositions, isGenerating]);
   
   useEffect(() => {
     if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading && !aiSummary && !isGenerating) {
@@ -497,7 +469,7 @@ const Index = () => {
                   <h2 className="font-cinzel text-2xl text-primary">How It Was Built</h2>
                 </div>
                 <div className="font-lato text-lg text-foreground/90 space-y-4 leading-relaxed">
-                  <p>This app was made using <strong className="text-primary">Lovable.dev</strong>, a platform that lets you build by simply describing what you want — a method known as <strong className="text-primary">Vibe Coding</strong>. It's a fresh way to create, where you code less and feel more.</p>
+                  <p>This app was made using <strong>Lovable.dev</strong>, a platform that lets you build by simply describing what you want — a method known as <strong className="text-primary">Vibe Coding</strong>. It's a fresh way to create, where you code less and feel more.</p>
                   <p>This project showcases the power of natural language development, where you describe what you want rather than writing traditional code line by line.</p>
                 </div>
               </motion.div>
