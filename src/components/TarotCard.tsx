@@ -1,72 +1,109 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { TarotCardData } from '@/types/tarot';
-import { cn } from '@/lib/utils';
 
 interface TarotCardProps {
-  card?: TarotCardData;
-  isFlipped: boolean;
+  card: TarotCardData;
+  isFlipped?: boolean;
   onClick?: () => void;
   className?: string;
-  isRevealed?: boolean;
 }
 
-const TarotCard = ({ card, isFlipped, onClick, className, isRevealed }: TarotCardProps) => {
-  const cardAspectRatio = 5 / 3;
-  const cardWidth = 'w-32 md:w-48';
-
+const TarotCard: React.FC<TarotCardProps> = ({ 
+  card, 
+  isFlipped = false, 
+  onClick, 
+  className = "w-32 h-48" 
+}) => {
   return (
-    <div
-      className={cn(
-        `perspective-1000 transform-style-3d transition-transform duration-1000`,
-        cardWidth,
-        { 'cursor-pointer': !!onClick },
-        className
-      )}
-      style={{ aspectRatio: cardAspectRatio }}
+    <motion.div
+      className={`relative cursor-pointer ${className}`}
       onClick={onClick}
+      whileHover={{ 
+        scale: 1.05,
+        rotateY: isFlipped ? 0 : 5,
+        transition: { duration: 0.3 }
+      }}
+      whileTap={{ scale: 0.95 }}
+      style={{ perspective: '1000px' }}
     >
-      <div
-        className={cn(
-          'relative w-full h-full transform-style-3d transition-transform duration-1000',
-          { 'rotate-y-180': isFlipped }
-        )}
+      <motion.div
+        className="relative w-full h-full preserve-3d"
+        initial={false}
+        animate={{ rotateY: isFlipped ? 0 : 180 }}
+        transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
+        style={{ transformStyle: 'preserve-3d' }}
       >
         {/* Card Back */}
-        <div className="absolute w-full h-full backface-hidden rounded-lg bg-secondary border-2 border-primary/50 flex items-center justify-center p-2 shadow-[0_0_15px_hsl(var(--primary)/0.5)]">
-           <div className="w-full h-full border-2 border-primary/30 rounded-md flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-primary/50">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.77 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"></path>
-              <path d="M12 10.5l1.85 3.76L18 14.77l-3 2.93L15.09 21 12 19.27 8.91 21 9.9 17.7l-3-2.93 4.15-.6L12 10.5z"></path>
-            </svg>
+        <div 
+          className="absolute inset-0 backface-hidden rounded-xl overflow-hidden shadow-card hover:shadow-elegant transition-shadow duration-300"
+          style={{ transform: 'rotateY(180deg)' }}
+        >
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 via-primary/10 to-primary/5 border-2 border-primary/30 rounded-xl flex items-center justify-center relative overflow-hidden">
+            {/* Mystical pattern overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-primary/5 to-primary/10"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,215,0,0.1)_0%,_transparent_50%)]"></div>
+            
+            {/* Decorative elements */}
+            <div className="relative z-10 text-center">
+              <div className="text-primary/60 text-4xl mb-2 animate-pulse-soft">✨</div>
+              <div className="text-primary/40 text-xs font-inter font-medium tracking-widest">MYSTICAL</div>
+              <div className="text-primary/40 text-xs font-inter tracking-widest">TAROT</div>
+            </div>
+            
+            {/* Corner decorations */}
+            <div className="absolute top-2 left-2 text-primary/30 text-xs">⟡</div>
+            <div className="absolute top-2 right-2 text-primary/30 text-xs">⟡</div>
+            <div className="absolute bottom-2 left-2 text-primary/30 text-xs">⟡</div>
+            <div className="absolute bottom-2 right-2 text-primary/30 text-xs">⟡</div>
           </div>
         </div>
 
         {/* Card Front */}
-        <div className="absolute w-full h-full backface-hidden rotate-y-180 rounded-lg bg-card border-2 border-primary/70 flex flex-col justify-center items-center p-4 shadow-[0_0_20px_hsl(var(--primary)/0.7)]">
-          {card && (
-             <div className="text-center">
-              <h3 className={cn("font-cinzel text-lg md:text-xl font-bold text-primary", { 'rotate-180': isRevealed && card.reversed })}>
-                {card.name}
-              </h3>
+        <div 
+          className="absolute inset-0 backface-hidden rounded-xl overflow-hidden shadow-card hover:shadow-elegant transition-shadow duration-300"
+        >
+          <div className={`relative w-full h-full bg-gradient-to-br from-background to-background/95 border-2 border-primary/40 rounded-xl overflow-hidden ${card.reversed ? 'rotate-180' : ''}`}>
+            {/* Card image or placeholder */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent"></div>
+            
+            {/* Card content */}
+            <div className="relative z-10 p-4 h-full flex flex-col">
+              {/* Card number/type indicator */}
+              <div className="text-xs font-inter text-primary/70 mb-2 text-center">
+                {card.suit ? `${card.suit.toUpperCase()}` : 'MAJOR ARCANA'}
+              </div>
+              
+              {/* Card name */}
+              <div className="flex-1 flex items-center justify-center">
+                <h3 className="font-playfair text-base font-bold text-center text-foreground leading-tight">
+                  {card.name}
+                </h3>
+              </div>
+              
+              {/* Decorative element */}
+              <div className="text-center text-primary/60 text-lg">
+                {card.suit === 'cups' && '♰'}
+                {card.suit === 'wands' && '⚡'}
+                {card.suit === 'swords' && '⚔'}
+                {card.suit === 'pentacles' && '⬟'}
+                {!card.suit && '✦'}
+              </div>
+              
+              {/* Bottom decoration */}
+              <div className="text-xs text-primary/40 text-center mt-2 font-inter">
+                {card.reversed ? 'REVERSED' : 'UPRIGHT'}
+              </div>
             </div>
-          )}
+            
+            {/* Subtle border glow */}
+            <div className="absolute inset-0 rounded-xl ring-1 ring-primary/20 pointer-events-none"></div>
+          </div>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
-
-// Add custom CSS for 3D transform effects
-const styles = `
-.perspective-1000 { perspective: 1000px; }
-.transform-style-3d { transform-style: preserve-3d; }
-.backface-hidden { backface-visibility: hidden; }
-.rotate-y-180 { transform: rotateY(180deg); }
-`;
-const styleSheet = document.createElement("style");
-styleSheet.innerText = styles;
-document.head.appendChild(styleSheet);
-
 
 export default TarotCard;

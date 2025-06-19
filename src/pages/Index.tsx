@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import TarotCard from '@/components/TarotCard';
 import { tarotDeckData } from '@/data/tarot-deck';
@@ -8,101 +8,50 @@ import { TarotCardData, ReadingCategory } from '@/types/tarot';
 import { interpretations } from '@/data/interpretations';
 import { shuffle } from 'lodash';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, Briefcase, Star, Sparkles, Wand, Swords, GlassWater, Linkedin, Mail, User, Code, Zap } from 'lucide-react';
-import { generateDynamicSummary, generateContextualReading } from '@/utils/readingGenerator';
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-type SpreadType = 3 | 5 | 7;
-type GameState = 'welcome' | 'spread' | 'category' | 'draw' | 'reading';
-
-const readingCategories: { name: ReadingCategory; label: string; icon: React.ReactNode }[] = [
-  { name: 'love', label: 'Love & Relationships', icon: <Heart className="w-8 h-8 mb-2" /> },
-  { name: 'career', label: 'Career & Finance', icon: <Briefcase className="w-8 h-8 mb-2" /> },
-  { name: 'spiritual', label: 'Spiritual Growth', icon: <Star className="w-8 h-8 mb-2" /> },
-  { name: 'general', label: 'General Guidance', icon: <Sparkles className="w-8 h-8 mb-2" /> },
-];
-
-const spreadOptions: { name: string; count: SpreadType; positions: string[], icon: React.ReactNode }[] = [
-  { name: '3-Card Spread', count: 3, positions: ["Past", "Present", "Future"], icon: <GlassWater className="w-8 h-8 mb-2" /> },
-  { name: '5-Card Spread', count: 5, positions: ["Situation", "Challenge", "Past", "Future", "Outcome"], icon: <Wand className="w-8 h-8 mb-2" /> },
-  { name: '7-Card Spread', count: 7, positions: ["Self", "Challenge", "Past", "Future", "Advice", "Hopes/Fears", "Outcome"], icon: <Swords className="w-8 h-8 mb-2" /> },
-];
+type GameState = 'welcome' | 'category' | 'reading' | 'result';
 
 const Index = () => {
   const [gameState, setGameState] = useState<GameState>('welcome');
-  const [deck, setDeck] = useState<TarotCardData[]>([]);
   const [selectedCards, setSelectedCards] = useState<TarotCardData[]>([]);
-  const [revealedCards, setRevealedCards] = useState<boolean[]>([]);
   const [category, setCategory] = useState<ReadingCategory | null>(null);
-  const [spread, setSpread] = useState<SpreadType>(3);
-  const [readingPositions, setReadingPositions] = useState<string[]>(spreadOptions[0].positions);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [aiReading, setAiReading] = useState<string>('');
-  const [aiSummary, setAiSummary] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const shuffleDeck = useCallback(() => {
-    const newDeck = shuffle(tarotDeckData).map(card => ({
-      ...card,
-      reversed: Math.random() < 0.5
-    }));
-    setDeck(newDeck);
-  }, []);
-
-  useEffect(() => {
-    shuffleDeck();
-  }, [shuffleDeck]);
-
-  const startGame = () => {
-    setGameState('spread');
-  };
-
-  const handleSpreadSelect = (spreadCount: SpreadType) => {
-    const selectedSpread = spreadOptions.find(s => s.count === spreadCount);
-    if (selectedSpread) {
-        setSpread(selectedSpread.count);
-        setReadingPositions(selectedSpread.positions);
-        setGameState('category');
+  const readingTypes = {
+    love: {
+      title: 'Love & Relationships',
+      description: 'Explore matters of the heart, romantic connections, and emotional bonds',
+      positions: ['Your Heart', 'Their Heart', 'The Connection'],
+      icon: '💕',
+      gradient: 'from-rose-500/20 to-pink-500/20'
+    },
+    career: {
+      title: 'Career & Success',
+      description: 'Navigate your professional path, ambitions, and material goals',
+      positions: ['Current Situation', 'Challenges', 'Outcome'],
+      icon: '⭐',
+      gradient: 'from-amber-500/20 to-yellow-500/20'
+    },
+    personal: {
+      title: 'Personal Growth',
+      description: 'Journey of self-discovery, inner wisdom, and spiritual development',
+      positions: ['Past Influence', 'Present Moment', 'Future Path'],
+      icon: '🌟',
+      gradient: 'from-purple-500/20 to-indigo-500/20'
     }
   };
 
-  const handleCategorySelect = (selectedCategory: ReadingCategory) => {
-    setCategory(selectedCategory);
-    setGameState('draw');
-  };
+  const readingPositions = category ? readingTypes[category].positions : ['Past', 'Present', 'Future'];
 
-  const handleCardSelect = (card: TarotCardData, index: number) => {
-    if (selectedCards.length < spread && !selectedCards.includes(card)) {
-      setSelectedCards(prev => [...prev, card]);
-    }
-  };
-  
-  useEffect(() => {
-    if (selectedCards.length === spread) {
-      setTimeout(() => {
-        setGameState('reading');
-        setRevealedCards(Array(spread).fill(false));
-      }, 1000);
-    }
-  }, [selectedCards, spread]);
-  
-  const handleRevealCard = (index: number) => {
-    setRevealedCards(prev => {
-        const newRevealed = [...prev];
-        newRevealed[index] = true;
-        return newRevealed;
-    });
-  };
-
-  const resetGame = () => {
-    shuffleDeck();
+  const resetReading = () => {
     setSelectedCards([]);
-    setRevealedCards([]);
-    setCategory(null);
     setAiReading('');
-    setAiSummary('');
+    setCategory(null);
     setGameState('welcome');
   };
 
-  // Enhanced interpretation function that returns a meaning string
   const getInterpretation = (card: TarotCardData, position: string): string => {
     if (!category) return card.reversed ? card.meaning_rev : card.meaning_up;
     
@@ -114,16 +63,15 @@ const Index = () => {
     
     const interpretation = card.reversed ? categoryInterpretation.reversed : categoryInterpretation.upright;
     
-    // Select the most relevant aspect based on position
     const posLower = position.toLowerCase();
     let selectedMeaning = "";
     
-    if (posLower.includes('past') || posLower.includes('history') || posLower.includes('foundation')) {
-      selectedMeaning = interpretation.current;
-    } else if (posLower.includes('future') || posLower.includes('outcome') || posLower.includes('ahead') || posLower.includes('coming')) {
+    if (posLower.includes('past') || posLower.includes('influence')) {
+      selectedMeaning = interpretation.past;
+    } else if (posLower.includes('future') || posLower.includes('outcome') || posLower.includes('path')) {
       selectedMeaning = interpretation.future;
-    } else if (posLower.includes('advice') || posLower.includes('guidance') || posLower.includes('divine')) {
-      selectedMeaning = interpretation.divine;
+    } else if (posLower.includes('advice') || posLower.includes('guidance')) {
+      selectedMeaning = interpretation.advice;
     } else {
       selectedMeaning = interpretation.current;
     }
@@ -132,467 +80,509 @@ const Index = () => {
   };
 
   const generateAIReading = useCallback(() => {
-    if (isGenerating || !category) return;
-    setIsGenerating(true);
-
+    if (!category || selectedCards.length === 0) return;
+    
+    setIsLoading(true);
+    
     setTimeout(() => {
-        const majorArcanaCount = selectedCards.filter(card => {
-          const majorArcana = ['The Fool', 'The Magician', 'The High Priestess', 'The Empress', 'The Emperor', 'The Hierophant', 'The Lovers', 'The Chariot', 'Strength', 'The Hermit', 'Wheel of Fortune', 'Justice', 'The Hanged Man', 'Death', 'Temperance', 'The Devil', 'The Tower', 'The Star', 'The Moon', 'The Sun', 'Judgement', 'The World'];
-          return majorArcana.includes(card.name);
-        }).length;
-        
-        const suits: { [key: string]: number } = { Wands: 0, Cups: 0, Swords: 0, Pentacles: 0 };
-        selectedCards.forEach(card => {
-            if (card.name.includes('Wands')) suits.Wands++;
-            else if (card.name.includes('Cups')) suits.Cups++;
-            else if (card.name.includes('Swords')) suits.Swords++;
-            else if (card.name.includes('Pentacles')) suits.Pentacles++;
-        });
-
-        const reversedCount = selectedCards.filter(card => card.reversed).length;
-
-        const readingContext = {
-          cards: selectedCards,
-          category,
-          positions: readingPositions,
-          majorArcanaCount,
-          suitDistribution: suits,
-          reversedCount
-        };
-
-        // Generate enhanced dynamic summary and reading
-        const summary = generateDynamicSummary(readingContext);
-        const reading = generateContextualReading(readingContext);
-
-        setAiSummary(summary);
-        setAiReading(reading);
-        setIsGenerating(false);
-    }, 1500);
-  }, [selectedCards, category, readingPositions, isGenerating]);
-  
-  useEffect(() => {
-    if (gameState === 'reading' && revealedCards.every(r => r) && !aiReading && !aiSummary && !isGenerating) {
-        generateAIReading();
-    }
-  }, [gameState, revealedCards, aiReading, aiSummary, isGenerating, generateAIReading]);
-
-  const renderGameState = () => {
-    switch (gameState) {
-      case 'welcome':
-        return (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center flex flex-col items-center justify-center h-full animate-fade-in"
-          >
-            <h1 className="text-5xl md:text-7xl font-cinzel text-primary animate-glow backface-hidden">Mystic Draw</h1>
-            <p className="mt-4 mb-2 text-lg md:text-xl max-w-2xl font-lato text-foreground/80">
-              Ask the deck your question, clear your mind, and when you're ready, draw your cards to reveal the truth.
-            </p>
-            <p className="mb-8 text-sm text-foreground/60 font-lato italic">
-              ✨ Created for entertainment and fun - let the cards inspire you!
-            </p>
-            <div className="flex flex-col gap-4 items-center">
-              <Button onClick={startGame} size="lg" className="font-cinzel text-lg">
-                Start Reading
-              </Button>
-            </div>
-          </motion.div>
-        );
+      const readingType = readingTypes[category];
+      let reading = `Your ${readingType.title} Reading reveals profound insights:\n\n`;
       
-      case 'spread':
-        return (
-            <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center flex flex-col items-center justify-center h-full p-4"
-          >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Spread</h1>
-            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
-              Select the layout that best fits your question.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {spreadOptions.map((opt, index) => (
-                    <motion.div
-                        key={opt.name}
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.15, type: 'spring', stiffness: 100 }}
-                    >
-                        <Button 
-                            variant="outline"
-                            className="h-auto w-48 flex-col p-6 bg-background/50 backdrop-blur-sm border-primary/30 hover:bg-primary/10 hover:border-primary/70 transition-all duration-300 group shadow-lg hover:shadow-primary/30"
-                            onClick={() => handleSpreadSelect(opt.count)}
-                        >
-                           <div className="text-primary/70 group-hover:text-primary transition-colors duration-300">{opt.icon}</div>
-                           <span className="font-cinzel text-lg text-foreground group-hover:text-primary transition-colors duration-300">{opt.name}</span>
-                        </Button>
-                    </motion.div>
-                ))}
-            </div>
-          </motion.div>
-        );
+      selectedCards.forEach((card, index) => {
+        const position = readingPositions[index];
+        const interpretation = getInterpretation(card, position);
+        reading += `**${position}** - ${card.name} ${card.reversed ? '(Reversed)' : ''}:\n${interpretation}\n\n`;
+      });
       
-      case 'category':
-        return (
-            <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="text-center flex flex-col items-center justify-center h-full p-4"
-          >
-            <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-2 animate-glow backface-hidden">Choose Your Focus</h1>
-            <p className="mt-2 mb-8 text-lg text-foreground/80 font-lato max-w-2xl">
-              Select the area of your life you'd like insight into.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {readingCategories.map((cat, index) => (
-                    <motion.div
-                        key={cat.name}
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.15, type: 'spring', stiffness: 100 }}
-                    >
-                        <Button 
-                            variant="outline"
-                            className="h-auto w-48 flex-col p-6 bg-background/50 backdrop-blur-sm border-primary/30 hover:bg-primary/10 hover:border-primary/70 transition-all duration-300 group shadow-lg hover:shadow-primary/30"
-                            onClick={() => handleCategorySelect(cat.name)}
-                        >
-                           <div className="text-primary/70 group-hover:text-primary transition-colors duration-300">{cat.icon}</div>
-                           <span className="font-cinzel text-lg text-foreground group-hover:text-primary transition-colors duration-300">{cat.label}</span>
-                        </Button>
-                    </motion.div>
-                ))}
-            </div>
-          </motion.div>
-        );
+      const themes = selectedCards.map(card => card.suit || 'Major Arcana').filter((v, i, arr) => arr.indexOf(v) === i);
+      const energyLevel = selectedCards.filter(card => !card.reversed).length;
+      
+      reading += `**Overall Theme**: The presence of ${themes.join(' and ')} energies suggests `;
+      if (energyLevel >= 2) {
+        reading += `a period of positive momentum and forward movement. `;
+      } else if (energyLevel === 1) {
+        reading += `a time of careful consideration and measured progress. `;
+      } else {
+        reading += `an opportunity for deep reflection and internal transformation. `;
+      }
+      
+      reading += `Trust your intuition as you navigate this journey, and remember that every card contains both challenges and gifts.`;
+      
+      setAiReading(reading);
+      setIsLoading(false);
+    }, 2000);
+  }, [category, selectedCards, readingPositions]);
 
-      case 'draw':
-        const cardsToDisplay = deck.slice(0, 21);
-        return (
-            <div className="flex flex-col items-center justify-center w-full h-full">
-                <h2 className="text-3xl font-cinzel text-primary/90 mb-8 animate-fade-in">Choose {spread} cards that call to you.</h2>
-                <div className="relative w-full h-[30rem] flex items-center justify-center">
-                    {cardsToDisplay.map((card, index) => {
-                        const angle = (index - (cardsToDisplay.length - 1) / 2) * 7;
-                        const isSelected = selectedCards.includes(card);
-                        
-                        return (
-                             <motion.div
-                                key={card.name}
-                                className="backface-hidden"
-                                initial={{ y: 200, opacity: 0, rotate: angle }}
-                                animate={{ 
-                                    y: isSelected ? -40 : 0, 
-                                    opacity: 1,
-                                    rotate: angle,
-                                }}
-                                whileHover={{ scale: 1.1, zIndex: 50, y: isSelected ? -40 : -10 }}
-                                transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
-                                style={{
-                                    transformOrigin: '50% 25rem',
-                                    zIndex: isSelected ? 100 : index,
-                                    position: 'absolute',
-                                }}
-                            >
-                                <TarotCard
-                                    card={card}
-                                    isFlipped={false}
-                                    onClick={() => handleCardSelect(card, index)}
-                                />
-                            </motion.div>
-                        )
-                    })}
-                </div>
-            </div>
-        );
-
-      case 'reading':
-        return (
-          <div className="w-full min-h-full">
-            <div className="flex flex-col items-center w-full p-4 pt-8 pb-12">
-              <h2 className="text-3xl md:text-4xl font-cinzel text-primary mb-2 text-center">Your {category ? readingCategories.find(c => c.name === category)?.label : ''} Reading</h2>
-              <p className="font-lato text-foreground/70 mb-6 text-center">Here lies the wisdom you seek.</p>
-              
-              <div className="flex flex-wrap justify-center items-start gap-6 md:gap-8 mb-8">
-                {selectedCards.map((card, index) => {
-                  const interpretationText = getInterpretation(card, readingPositions[index]);
-                  return (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.3 }}
-                    className="flex flex-col items-center gap-4 backface-hidden"
-                  >
-                    <h4 className="font-cinzel text-xl text-primary/80">{readingPositions[index]}</h4>
-                    <TarotCard
-                      card={card}
-                      isFlipped={true}
-                      onClick={() => handleRevealCard(index)}
-                      isRevealed={revealedCards[index]}
-                    />
-                    <AnimatePresence>
-                    {revealedCards[index] && (
-                       <motion.div 
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          transition={{ duration: 0.5, ease: "easeInOut" }}
-                          className="text-center max-w-xs bg-black/20 p-4 rounded-lg w-full"
-                       >
-                         <h3 className="font-cinzel text-xl text-primary">{card.name} {card.reversed ? '(Reversed)' : ''}</h3>
-                         <p className="font-lato text-sm text-foreground/80 mt-2">
-                           {interpretationText}
-                         </p>
-                         <p className="font-lato text-xs text-foreground/70 mt-4 border-t border-primary/20 pt-3">
-                          <strong>In Context:</strong> {card.desc}
-                         </p>
-                       </motion.div>
-                    )}
-                    </AnimatePresence>
-                  </motion.div>
-                  )
-                })}
-              </div>
-
-              <AnimatePresence>
-                  {revealedCards.every(r => r) && (
-                      <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 }}
-                          className="w-full max-w-3xl my-8"
-                      >
-                          {isGenerating && 
-                              <div className="flex flex-col items-center gap-4 text-primary/80 animate-pulse">
-                                  <Sparkles className="w-10 h-10"/>
-                                  <p className="font-cinzel text-xl">The spirits are whispering...</p>
-                              </div>
-                          }
-                          {aiSummary && (
-                              <motion.div 
-                                  initial={{ opacity: 0 }}
-                                  animate={{ opacity: 1 }}
-                                  transition={{ delay: 0.2 }}
-                                  className="bg-primary/10 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/30 mb-8"
-                              >
-                                  <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">Your Reading's Essence</h3>
-                                  <p className="text-center font-lato text-lg text-foreground/90 whitespace-pre-wrap">{aiSummary}</p>
-                              </motion.div>
-                          )}
-                          {aiReading && (
-                              <div className="bg-black/30 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-primary/20">
-                                  <h3 className="font-cinzel text-2xl text-primary mb-4 text-center animate-glow backface-hidden">A Message from the Cosmos</h3>
-                                  <div className="text-left font-lato text-lg text-foreground/90 whitespace-pre-wrap space-y-4">
-                                    {aiReading.split('\n\n').map((paragraph, i) => <p key={i}>{paragraph}</p>)}
-                                  </div>
-                              </div>
-                          )}
-                      </motion.div>
-                  )}
-              </AnimatePresence>
-
-              {revealedCards.every(r => r) && !isGenerating && (
-                <motion.div initial={{opacity: 0}} animate={{opacity: 1}} transition={{delay: 0.5}} className="mt-4">
-                  <Button onClick={resetGame} size="lg" className="font-cinzel text-lg">
-                    New Reading
-                  </Button>
-                </motion.div>
-              )}
-               {!revealedCards.every(r => r) && (
-                   <p className="font-lato text-foreground/70 mt-4 animate-pulse">Click each card to reveal its meaning.</p>
-               )}
-            </div>
-          </div>
-        );
-      default:
-        return null;
-    }
+  const selectCategory = (selectedCategory: ReadingCategory) => {
+    setCategory(selectedCategory);
+    setGameState('reading');
   };
 
-  return (
-    <div className="min-h-screen w-full bg-background font-lato text-foreground flex items-center justify-center relative overflow-hidden">
-      <div className="w-full h-screen flex flex-col">
-        <Tabs defaultValue="home" className="w-full h-full flex flex-col">
-          <TabsList className="mx-auto mt-4 bg-background/50 backdrop-blur-sm border border-primary/30">
-            <TabsTrigger 
-              value="home" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-cinzel text-lg px-6"
+  const performReading = () => {
+    const shuffledDeck = shuffle([...tarotDeckData]);
+    const drawn = shuffledDeck.slice(0, 3).map(card => ({
+      ...card,
+      reversed: Math.random() < 0.3
+    }));
+    
+    setSelectedCards(drawn);
+    setGameState('result');
+    generateAIReading();
+  };
+
+  const WelcomeScreen = () => (
+    <motion.div 
+      className="text-center max-w-4xl mx-auto px-4"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+    >
+      <motion.div
+        className="mb-8"
+        initial={{ scale: 0.9 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1, ease: "easeOut" }}
+      >
+        <h1 className="font-playfair text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-primary via-primary/80 to-primary bg-clip-text text-transparent animate-glow">
+          Mystical Tarot
+        </h1>
+        <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto mb-6"></div>
+        <p className="font-inter text-lg md:text-xl text-foreground/80 leading-relaxed max-w-2xl mx-auto">
+          Step into the ancient wisdom of the cards. Discover insights, guidance, and clarity 
+          through the mystical art of tarot reading.
+        </p>
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+      >
+        <Button 
+          onClick={() => setGameState('category')}
+          size="lg"
+          className="group relative overflow-hidden bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90 text-primary-foreground font-inter font-medium px-8 py-4 rounded-full shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105"
+        >
+          <span className="relative z-10">Begin Your Journey</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </Button>
+      </motion.div>
+
+      <motion.div 
+        className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6, duration: 0.8 }}
+      >
+        {Object.entries(readingTypes).map(([key, type], index) => (
+          <motion.div
+            key={key}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 + index * 0.1, duration: 0.6 }}
+          >
+            <Card className={`group cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-elegant bg-gradient-to-br ${type.gradient} backdrop-blur-sm border-primary/20 hover:border-primary/40`}>
+              <CardContent className="p-6 text-center">
+                <div className="text-3xl mb-4 animate-float" style={{ animationDelay: `${index * 0.5}s` }}>
+                  {type.icon}
+                </div>
+                <h3 className="font-playfair text-xl font-semibold mb-2 text-foreground">
+                  {type.title}
+                </h3>
+                <p className="font-inter text-sm text-foreground/70 leading-relaxed">
+                  {type.description}
+                </p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
+  );
+
+  const CategoryScreen = () => (
+    <motion.div 
+      className="text-center max-w-4xl mx-auto px-4"
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+    >
+      <motion.h2 
+        className="font-playfair text-4xl md:text-5xl font-bold mb-4 text-foreground"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        Choose Your Path
+      </motion.h2>
+      <motion.p 
+        className="font-inter text-lg text-foreground/70 mb-12 max-w-2xl mx-auto"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+      >
+        Select the area of life you'd like to explore through the wisdom of the cards.
+      </motion.p>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        {Object.entries(readingTypes).map(([key, type], index) => (
+          <motion.div
+            key={key}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 + index * 0.1, duration: 0.6 }}
+          >
+            <Card 
+              className={`group cursor-pointer transition-all duration-500 hover:scale-105 hover:shadow-elegant bg-gradient-to-br ${type.gradient} backdrop-blur-sm border-primary/20 hover:border-primary/60 overflow-hidden relative`}
+              onClick={() => selectCategory(key as ReadingCategory)}
             >
-              Home
-            </TabsTrigger>
-            <TabsTrigger 
-              value="about" 
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-cinzel text-lg px-6"
-            >
-              About Us
-            </TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="home" className="flex-1 mt-0 overflow-y-auto">
-            <AnimatePresence mode="wait">
-              <div key={gameState} className="w-full min-h-full flex items-center justify-center">
-                {renderGameState()}
-              </div>
-            </AnimatePresence>
-          </TabsContent>
-          
-          <TabsContent value="about" className="flex-1 mt-0 overflow-y-auto">
-            <div className="max-w-4xl mx-auto p-8 space-y-8">
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center"
-              >
-                <h1 className="text-4xl md:text-5xl font-cinzel text-primary mb-8 animate-glow backface-hidden">About Mystic Draw</h1>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <User className="w-6 h-6 text-primary" />
-                  <h2 className="font-cinzel text-2xl text-primary">Meet the Creator</h2>
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 transform -skew-x-12 translate-x-full group-hover:translate-x-[-100%]"></div>
+              <CardContent className="p-8 text-center relative z-10">
+                <motion.div 
+                  className="text-4xl mb-6"
+                  whileHover={{ scale: 1.2, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300 }}
+                >
+                  {type.icon}
+                </motion.div>
+                <h3 className="font-playfair text-2xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-300">
+                  {type.title}
+                </h3>
+                <p className="font-inter text-foreground/70 leading-relaxed mb-6">
+                  {type.description}
+                </p>
+                <div className="space-y-2">
+                  {type.positions.map((position, i) => (
+                    <div key={i} className="font-inter text-sm text-foreground/60 bg-background/50 rounded-full px-3 py-1">
+                      {position}
+                    </div>
+                  ))}
                 </div>
-                <div className="font-lato text-lg text-foreground/90 space-y-4 leading-relaxed">
-                  <p>Hey, I'm <strong className="text-primary">Satyam Chaudhary</strong>.</p>
-                  <p>I built Mystic Draw as a small side project while exploring new ways to create web apps using AI.</p>
-                  <p>Thanks for trying it out :)</p>
-                  <p className="text-right italic text-primary">— Satyam</p>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <Code className="w-6 h-6 text-primary" />
-                  <h2 className="font-cinzel text-2xl text-primary">How It Was Built</h2>
-                </div>
-                <div className="font-lato text-lg text-foreground/90 space-y-4 leading-relaxed">
-                  <p>This app was made using <strong>Lovable.dev</strong>, a platform that lets you build by simply describing what you want — a method known as <strong className="text-primary">Vibe Coding</strong>. It's a fresh way to create, where you code less and feel more.</p>
-                  <p>This project showcases the power of natural language development, where you describe what you want rather than writing traditional code line by line.</p>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
-              >
-                <div className="flex items-center gap-3 mb-6">
-                  <Zap className="w-6 h-6 text-primary" />
-                  <h2 className="font-cinzel text-2xl text-primary">Why Tarot + AI</h2>
-                </div>
-                <div className="font-lato text-lg text-foreground/90 space-y-4 leading-relaxed">
-                  <p>For the AI tarot readings, I used <strong className="text-primary">Google's Gemini model</strong> to make sure each card gives a real, meaningful response based on your actual choice — not something random.</p>
-                  <p>This project mixes something ancient (tarot) with something new (AI), and for me, it's just one way of learning by building — combining old ideas with modern tools.</p>
-                </div>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-              >
-                <Accordion type="single" collapsible className="w-full">
-                  <AccordionItem value="technical-details" className="border-primary/30">
-                    <AccordionTrigger className="font-cinzel text-xl text-primary hover:text-primary/80">
-                      🛠️ Technical Details
-                    </AccordionTrigger>
-                    <AccordionContent className="font-lato text-foreground/90 space-y-4 pt-4">
-                      <div className="space-y-6">
-                        <div>
-                          <h3 className="font-cinzel text-lg text-primary mb-2 flex items-center gap-2">
-                            <Code className="w-5 h-5" />
-                            Platform & Methodology
-                          </h3>
-                          <p>Built with <strong>Lovable.dev</strong>, an AI-powered platform that enables rapid web development through natural language descriptions. This project showcases the power of <strong>Vibe Coding</strong> - a development approach where you describe what you want rather than writing traditional code line by line.</p>
-                        </div>
-                        
-                        <div>
-                          <h3 className="font-cinzel text-lg text-primary mb-2 flex items-center gap-2">
-                            <Star className="w-5 h-5" />
-                            Tech Stack
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 ml-4">
-                            <li><strong>React 18</strong> - Modern UI library with hooks and functional components</li>
-                            <li><strong>TypeScript</strong> - Type-safe JavaScript for better development experience</li>
-                            <li><strong>Tailwind CSS</strong> - Utility-first CSS framework for responsive design</li>
-                            <li><strong>Framer Motion</strong> - Smooth animations and transitions</li>
-                            <li><strong>shadcn/ui</strong> - Beautiful, accessible component library</li>
-                            <li><strong>Radix UI</strong> - Unstyled, accessible UI primitives</li>
-                            <li><strong>Vite</strong> - Fast build tool and development server</li>
-                          </ul>
-                        </div>
-                        
-                        <div>
-                          <h3 className="font-cinzel text-lg text-primary mb-2 flex items-center gap-2">
-                            <Sparkles className="w-5 h-5" />
-                            AI Integration
-                          </h3>
-                          <p><strong>Google Gemini AI</strong> powers the tarot interpretations, providing contextual and meaningful readings based on your selected cards and chosen focus area. The AI generates personalized insights rather than generic responses.</p>
-                        </div>
-                        
-                        <div>
-                          <h3 className="font-cinzel text-lg text-primary mb-2 flex items-center gap-2">
-                            <Wand className="w-5 h-5" />
-                            Features
-                          </h3>
-                          <ul className="list-disc list-inside space-y-1 ml-4">
-                            <li>Interactive tarot card selection with physics-based animations</li>
-                            <li>Multiple spread options (3, 5, and 7 card layouts)</li>
-                            <li>Category-specific interpretations (Love, Career, Spiritual, General)</li>
-                            <li>AI-generated personalized readings</li>
-                            <li>Fully responsive design for all devices</li>
-                            <li>Mystical UI with custom animations and effects</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                </Accordion>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="bg-background/50 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-primary/30"
-              >
-                <h2 className="font-cinzel text-2xl text-primary mb-6 text-center">Connect with Me</h2>
-                <div className="flex justify-center gap-8">
-                  <a 
-                    href="https://linkedin.com/in/satyam-jat-374481338" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors duration-300 group"
-                  >
-                    <Linkedin className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-                    <span className="font-lato">LinkedIn</span>
-                  </a>
-                  <a 
-                    href="mailto:pcerror009@gmail.com"
-                    className="flex items-center gap-3 text-foreground/80 hover:text-primary transition-colors duration-300 group"
-                  >
-                    <Mail className="w-6 h-6 group-hover:scale-110 transition-transform duration-300" />
-                    <span className="font-lato">Email</span>
-                  </a>
-                </div>
-              </motion.div>
-            </div>
-          </TabsContent>
-        </Tabs>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
+        <Button 
+          onClick={() => setGameState('welcome')}
+          variant="outline"
+          className="font-inter border-primary/30 text-foreground/70 hover:border-primary hover:text-foreground transition-all duration-300"
+        >
+          Back to Welcome
+        </Button>
+      </motion.div>
+    </motion.div>
+  );
+
+  const ReadingScreen = () => (
+    <motion.div 
+      className="text-center max-w-3xl mx-auto px-4"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        <div className="text-4xl mb-4 animate-pulse-soft">
+          {readingTypes[category!].icon}
+        </div>
+        <h2 className="font-playfair text-4xl font-bold mb-4 text-foreground">
+          {readingTypes[category!].title}
+        </h2>
+        <p className="font-inter text-lg text-foreground/70 mb-8">
+          {readingTypes[category!].description}
+        </p>
+      </motion.div>
+
+      <motion.div 
+        className="bg-card/50 backdrop-blur-sm border border-primary/20 rounded-2xl p-8 mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.6 }}
+      >
+        <h3 className="font-playfair text-xl font-semibold mb-6 text-foreground">Your Reading Positions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {readingPositions.map((position, index) => (
+            <motion.div
+              key={position}
+              className="bg-background/60 border border-primary/10 rounded-lg p-4"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
+            >
+              <div className="text-2xl mb-2 text-primary font-bold">{index + 1}</div>
+              <div className="font-inter text-sm font-medium text-foreground">{position}</div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        className="space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+      >
+        <Button 
+          onClick={performReading}
+          size="lg"
+          className="group relative overflow-hidden bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90 text-primary-foreground font-inter font-medium px-8 py-4 rounded-full shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105"
+        >
+          <span className="relative z-10">Draw Your Cards</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </Button>
+        
+        <div>
+          <Button 
+            onClick={() => setGameState('category')}
+            variant="ghost"
+            className="font-inter text-foreground/70 hover:text-foreground transition-colors duration-300"
+          >
+            Choose Different Path
+          </Button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+
+  const ResultScreen = () => (
+    <motion.div 
+      className="max-w-6xl mx-auto px-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      <motion.div 
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.6 }}
+      >
+        <div className="text-3xl mb-4">
+          {readingTypes[category!].icon}
+        </div>
+        <h2 className="font-playfair text-4xl font-bold mb-4 text-foreground">
+          Your {readingTypes[category!].title} Reading
+        </h2>
+        <div className="w-24 h-px bg-gradient-to-r from-transparent via-primary to-transparent mx-auto"></div>
+      </motion.div>
+      
+      <div className="flex flex-wrap justify-center items-start gap-8 mb-12">
+        {selectedCards.map((card, index) => {
+          const interpretationText = getInterpretation(card, readingPositions[index]);
+          return (
+          <motion.div 
+            key={index}
+            className="flex flex-col items-center max-w-sm"
+            initial={{ opacity: 0, y: 50, rotateY: 180 }}
+            animate={{ opacity: 1, y: 0, rotateY: 0 }}
+            transition={{ 
+              delay: 0.3 + index * 0.2, 
+              duration: 0.8,
+              type: "spring",
+              stiffness: 100
+            }}
+          >
+            <div className="relative mb-6 group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-primary/10 rounded-lg blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative">
+                <TarotCard 
+                  card={card} 
+                  isFlipped={true}
+                  className="w-48 h-80 shadow-card hover:shadow-elegant transition-all duration-300 hover:scale-105"
+                />
+              </div>
+            </div>
+            
+            <Card className="w-full bg-card/80 backdrop-blur-sm border-primary/20 hover:border-primary/40 transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="text-center mb-4">
+                  <div className="inline-flex items-center justify-center w-8 h-8 bg-primary/10 text-primary rounded-full text-sm font-bold mb-2">
+                    {index + 1}
+                  </div>
+                  <h4 className="font-playfair text-lg font-semibold text-primary mb-1">
+                    {readingPositions[index]}
+                  </h4>
+                </div>
+                <h3 className="font-playfair text-xl font-semibold text-foreground mb-3 text-center">
+                  {card.name} {card.reversed ? '(Reversed)' : ''}
+                </h3>
+                <p className="font-inter text-sm text-foreground/80 leading-relaxed mb-4">
+                  {interpretationText}
+                </p>
+                <div className="border-t border-primary/20 pt-4">
+                  <p className="font-inter text-xs text-foreground/60 leading-relaxed">
+                    <strong className="text-foreground/80">Essence:</strong> {card.desc}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+          );
+        })}
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1, duration: 0.8 }}
+      >
+        <Card className="bg-gradient-to-br from-card/90 to-card/50 backdrop-blur-md border-primary/30 shadow-elegant">
+          <CardContent className="p-8">
+            <h3 className="font-playfair text-2xl font-bold mb-6 text-center text-foreground flex items-center justify-center gap-3">
+              <span className="text-primary">✨</span>
+              Your Personal Reading
+              <span className="text-primary">✨</span>
+            </h3>
+            
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <LoadingSpinner size="lg" text="Channeling cosmic insights..." />
+              </div>
+            ) : (
+              <motion.div 
+                className="prose prose-invert max-w-none"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="font-inter text-foreground/90 leading-relaxed space-y-4 text-center">
+                  {aiReading.split('\n\n').map((paragraph, index) => (
+                    <motion.p 
+                      key={index}
+                      className={paragraph.startsWith('**') ? 'font-semibold text-primary text-lg' : ''}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1, duration: 0.6 }}
+                    >
+                      {paragraph.replace(/\*\*(.*?)\*\*/g, '$1')}
+                    </motion.p>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div 
+        className="text-center mt-12 space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5, duration: 0.6 }}
+      >
+        <Button 
+          onClick={resetReading}
+          size="lg"
+          className="group relative overflow-hidden bg-gradient-to-r from-primary/90 to-primary hover:from-primary hover:to-primary/90 text-primary-foreground font-inter font-medium px-8 py-4 rounded-full shadow-glow hover:shadow-glow-lg transition-all duration-300 hover:scale-105 mr-4"
+        >
+          <span className="relative z-10">New Reading</span>
+          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </Button>
+        
+        <Button 
+          onClick={() => setGameState('category')}
+          variant="outline"
+          className="font-inter border-primary/30 text-foreground/70 hover:border-primary hover:text-foreground transition-all duration-300"
+        >
+          Different Path
+        </Button>
+      </motion.div>
+    </motion.div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Enhanced background with subtle patterns */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background/95 to-background/90"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent"></div>
+      
+      <div className="relative z-10 container mx-auto py-12 md:py-20">
+        <AnimatePresence mode="wait">
+          {gameState === 'welcome' && <WelcomeScreen key="welcome" />}
+          {gameState === 'category' && <CategoryScreen key="category" />}
+          {gameState === 'reading' && <ReadingScreen key="reading" />}
+          {gameState === 'result' && <ResultScreen key="result" />}
+        </AnimatePresence>
+      </div>
+
+      {/* Enhanced FAQ Section */}
+      <motion.div 
+        className="relative z-10 container mx-auto px-4 py-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2, duration: 1 }}
+      >
+        <div className="max-w-3xl mx-auto">
+          <h3 className="font-playfair text-3xl font-bold text-center mb-8 text-foreground">
+            Frequently Asked Questions
+          </h3>
+          <Accordion type="single" collapsible className="space-y-4">
+            {[
+              {
+                id: "accuracy",
+                question: "How accurate are tarot readings?",
+                answer: "Tarot readings offer guidance and insights rather than concrete predictions. They help you reflect on your current situation and explore different perspectives. The accuracy depends on your openness to the messages and how well you connect with the symbolism of the cards."
+              },
+              {
+                id: "reversed",
+                question: "What do reversed cards mean?",
+                answer: "Reversed cards often represent internal energies, blocked potential, or lessons that need more attention. They're not necessarily negative - they can indicate a need for introspection or a different approach to the situation at hand."
+              },
+              {
+                id: "frequency",
+                question: "How often should I get a reading?",
+                answer: "There's no set rule, but many people find weekly or monthly readings helpful for guidance. For specific questions or major life decisions, you might want a reading when you feel the need for clarity. Trust your intuition about timing."
+              },
+              {
+                id: "interpretation",
+                question: "How should I interpret my reading?",
+                answer: "Consider how the cards relate to your current situation and feelings. Look for patterns, themes, and connections between the cards. Trust your intuition - often your first impression holds important insights. Remember that you have the power to shape your future."
+              }
+            ].map((faq) => (
+              <AccordionItem 
+                key={faq.id} 
+                value={faq.id}
+                className="bg-card/30 backdrop-blur-sm border border-primary/20 rounded-lg px-6 hover:border-primary/40 transition-all duration-300"
+              >
+                <AccordionTrigger className="font-playfair text-lg font-medium text-foreground hover:text-primary transition-colors duration-300 hover:no-underline">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent className="font-inter text-foreground/80 leading-relaxed pt-4">
+                  {faq.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </motion.div>
+
+      {/* Premium Footer */}
+      <footer className="relative z-10 border-t border-primary/20 bg-card/20 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="font-inter text-sm text-foreground/60 mb-2">
+              Created with cosmic energy and digital magic
+            </p>
+            <div className="flex justify-center items-center gap-4 text-xs text-foreground/40">
+              <span>✨ Trust the Journey</span>
+              <span>•</span>
+              <span>🌙 Embrace the Mystery</span>
+              <span>•</span>
+              <span>⭐ Follow Your Intuition</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
